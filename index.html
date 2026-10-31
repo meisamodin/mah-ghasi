@@ -163,10 +163,13 @@ function dial(I){
 }
 const EDL={dial:0,cyc:0},EDT={};
 function edBtn(k,fa_,en_,a){const on=EDL[k];return`<button class="edbtn ${on?'on':''}" data-a="${a}">${on?'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'+oL('تأیید','Done'):'<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'+oL('ویرایش','Edit')}</button>`}
-function edTog(k){EDL[k]=EDL[k]?0:1;clearTimeout(EDT[k]);if(EDL[k])EDT[k]=setTimeout(()=>{EDL[k]=0;draw()},90000)}
+function dialTop(){const d=$('#dial');return d?d.getBoundingClientRect().top:null}
+function dialFix(t){if(t==null)return;const t2=dialTop();if(t2!=null&&Math.abs(t2-t)>1)window.scrollBy({top:t2-t,behavior:'instant'})}
+function dialAnchor(fn){const t=dialTop();fn();dialFix(t)}
+function edTog(k){const t0=dialTop();setTimeout(()=>dialFix(t0),0);EDL[k]=EDL[k]?0:1;clearTimeout(EDT[k]);if(EDL[k])EDT[k]=setTimeout(()=>{EDL[k]=0;draw()},90000)}
 function setDay(d){const t=today();S.start=iso(add(t,-(d-1)));save()}
 function ptr(e){const svg=$('#dial');if(!svg)return;const r=svg.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);
- let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;const d=Math.min(S.cycle,Math.floor(a/(360/S.cycle))+1);if(d!==dayOf(today())){setDay(d);const y=window.scrollY;draw();window.scrollTo(0,y);clearTimeout(EDT.dial);EDT.dial=setTimeout(()=>{EDL.dial=0;draw()},90000)}}
+ let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;const d=Math.min(S.cycle,Math.floor(a/(360/S.cycle))+1);if(d!==dayOf(today())){setDay(d);dialAnchor(()=>{draw()});clearTimeout(EDT.dial);EDT.dial=setTimeout(()=>{EDL.dial=0;draw()},90000)}}
 function onRing(e){const svg=$('#dial');if(!svg||!EDL.dial)return false;const r=svg.getBoundingClientRect(),k=130/(r.width/2),x=(e.clientX-(r.left+r.width/2))*k,y=(e.clientY-(r.top+r.height/2))*k,d=Math.hypot(x,y);return d>=68&&d<=130}
 document.addEventListener('pointerdown',e=>{if(e.target.closest('#dial')&&onRing(e)){drag=true;ptr(e)}});
 document.addEventListener('touchstart',e=>{const t=e.touches[0];if(t&&e.target.closest&&e.target.closest('#dial')&&onRing(t))e.preventDefault()},{passive:false});
@@ -1374,7 +1377,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v60';
+const APPV='v61';
 const TGP=['pw','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}
