@@ -37,6 +37,12 @@ h3{margin:0 0 8px;font-size:15px}
 .wd.on{background:var(--pk);color:#fff}.wd.on b{color:#fff}
 .dot{width:6px;height:6px;border-radius:50%;margin:3px auto 0;background:var(--bd)}
 .pill{display:inline-block;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600}
+.edbtn{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:999px;border:1.5px solid var(--pk);background:linear-gradient(135deg,var(--card),#ffe3ec55);color:var(--pk);font:inherit;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 14px #d6336c22;transition:transform .15s}
+.edbtn:active{transform:scale(.96)}.edbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.edbtn.on{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-color:transparent;box-shadow:0 4px 14px #10b98144}
+@keyframes edpul{0%,100%{filter:drop-shadow(0 0 3px var(--pk))}50%{filter:drop-shadow(0 0 12px var(--pk))}}
+.dialwrap.edit svg{animation:edpul 1.6s ease-in-out infinite}
+input[type=range][disabled]{opacity:.45}
 .dialwrap{position:relative;width:min(300px,100%);margin:10px auto;touch-action:pan-y}
 .dialwrap svg{width:100%;height:auto;display:block;touch-action:pan-y;user-select:none}
 .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
@@ -144,7 +150,7 @@ function dial(I){
  const k=360/I.C,cur=(I.day-.5)*k,[kx,ky]=pol(cur,100);
  const seg=(a,b,c)=>`<path d="${arc(a*k,b*k,100)}" stroke="${c}" stroke-width="18" fill="none" opacity=".3"/>`;
  let ticks='';for(let i=0;i<I.C;i++){const[x0,y0]=pol(i*k,88),[x1,y1]=pol(i*k,i%7==0?80:84);ticks+=`<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="var(--mu)" stroke-width="1" opacity=".5"/>`}
- return`<div class="dialwrap"><svg id="dial" viewBox="0 0 260 260">
+ return`<div class="dialwrap${EDL.dial?' edit':''}"><svg id="dial" viewBox="0 0 260 260">
  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e11d48"/><stop offset="1" stop-color="#ec4899"/></linearGradient></defs>
  <circle cx="130" cy="130" r="100" fill="none" stroke="var(--bd)" stroke-width="18" opacity=".6"/>
  ${seg(0,I.P,'#e11d48')}${seg(I.ov-6,I.ov+1,'#10b981')}${seg(I.C-7,I.C,'#8b5cf6')}
@@ -154,10 +160,13 @@ function dial(I){
  <text x="${kx.toFixed(1)}" y="${(ky+5).toFixed(1)}" text-anchor="middle" font-size="14">🌙</text></svg>
  <div class="mid"><span class="mu">از دوره ${fa(I.C)} روزه</span><span class="n">روز ${fa(I.day)}</span><span class="pill" style="background:${I.col}22;color:${I.col}">${I.ph}</span></div></div>`
 }
+const EDL={dial:0,cyc:0},EDT={};
+function edBtn(k,fa_,en_,a){const on=EDL[k];return`<button class="edbtn ${on?'on':''}" data-a="${a}">${on?'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'+oL('تأیید','Done'):'<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>'+oL('ویرایش','Edit')}</button>`}
+function edTog(k){EDL[k]=EDL[k]?0:1;clearTimeout(EDT[k]);if(EDL[k])EDT[k]=setTimeout(()=>{EDL[k]=0;draw()},90000)}
 function setDay(d){const t=today();S.start=iso(add(t,-(d-1)));save()}
 function ptr(e){const svg=$('#dial');if(!svg)return;const r=svg.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);
  let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;const d=Math.min(S.cycle,Math.floor(a/(360/S.cycle))+1);if(d!==dayOf(today())){setDay(d);draw()}}
-function onRing(e){const svg=$('#dial');if(!svg)return false;const r=svg.getBoundingClientRect(),k=130/(r.width/2),x=(e.clientX-(r.left+r.width/2))*k,y=(e.clientY-(r.top+r.height/2))*k,d=Math.hypot(x,y);return d>=68&&d<=130}
+function onRing(e){const svg=$('#dial');if(!svg||!EDL.dial)return false;const r=svg.getBoundingClientRect(),k=130/(r.width/2),x=(e.clientX-(r.left+r.width/2))*k,y=(e.clientY-(r.top+r.height/2))*k,d=Math.hypot(x,y);return d>=68&&d<=130}
 document.addEventListener('pointerdown',e=>{if(e.target.closest('#dial')&&onRing(e)){drag=true;ptr(e)}});
 document.addEventListener('touchstart',e=>{const t=e.touches[0];if(t&&e.target.closest&&e.target.closest('#dial')&&onRing(t))e.preventDefault()},{passive:false});
 document.addEventListener('pointermove',e=>{if(drag){e.preventDefault();ptr(e)}},{passive:false});
@@ -177,7 +186,7 @@ function todayCard(){const k=iso(today()),L=S.logs[k]||{moods:[],phys:[],water:0
 function home(){if(quiet()){return(S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'')+alertsCard()+aptCard()+bmNote()+stBanner()+msBanner()+modeCard()+todayCard()+goalsCard()+motCard()+calCard()}return home0()}
 function home0(){const I=info();
  return`${S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'<div class="card" data-t="hl" style="cursor:pointer;margin-bottom:10px"><b>👤 مشخصاتت رو وارد کن</b><div class="mu">اسم، سن، قد و وزن رو بنویس تا تحلیل بدنت رو ببینی (تب سلامت)</div></div>'}${alertsCard()}${aptCard()}${lateCard()}${bmNote()}${hyCard()}${stBanner()}${msBanner()}${cycSug()}${bkRemind()}${fertNote()}${ttcCard()}${modeNote()}${week()}<div class="card" style="text-align:center">${dial(I)}
- <div class="mu">دایره رو با انگشتت بچرخون تا روز چرخه‌ات رو ویرایش کنی</div>
+ <div class="mu">${EDL.dial?oL('حالا دایره رو با انگشتت بچرخون؛ بعدش «تأیید» رو بزن.','Now turn the circle with your finger, then tap "Done".'):oL('برای تغییر روز چرخه، اول «ویرایش» رو بزن.','To change the cycle day, tap "Edit" first.')}</div><div style="margin-top:8px">${edBtn('dial','','','edd')}</div>
  <div class="row" style="margin:12px 0 0"><button class="btn o step" data-a="m">−</button><button class="btn" data-a="start">🩸 ثبت شروع پریود امروز</button><button class="btn o step" data-a="p">+</button></div></div>
  <div class="grid3"><div class="mini">📅 پریود بعدی<b>${jf(I.next,{day:'numeric',month:'long'})}</b></div><div class="mini">🌸 تخمک‌گذاری<b>${jf(I.ovd,{day:'numeric',month:'long'})}</b></div><div class="mini">🌱 شانس بارداری<b>${I.fertile?'زیاد':(Math.abs(I.day-I.ov)<=7?'متوسط':'کم')}</b></div></div>
  ${endCard()}${quickCard()}${todayCard()}${S.sm?'':goalsCard()}<div class="card" style="margin-top:12px"><h3>💡 توصیه امروز</h3><div class="mu">${tip(I)}</div></div>${S.sm?'':motCard()+calCard()+statsCard()+mrCard()}`}
@@ -296,8 +305,9 @@ function noticeTab0(){const I=info(),n=[];
 function setTab(){return`<div class="card"><h3>⚙️ تنظیمات چرخه</h3><div class="mu">تاریخ ثبت‌شده: ${jf(parse(S.start),{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
  <div class="mu" style="margin-top:10px">انتخاب سریع شروع آخرین دوره</div><div class="chips">${[['امروز',0],['دیروز',1],['۳ روز پیش',3],['۱ هفته پیش',7],['۲ هفته پیش',14],['۳ هفته پیش',21]].map(a=>`<button class="chip" data-a="q" data-v="${a[1]}">${a[0]}</button>`).join('')}</div>
  <div class="mu" style="margin-top:10px">یا تاریخ دقیق</div><input type="date" id="dt" value="${S.start}">
- <div class="lab"><span>طول کل دوره</span><span style="color:var(--pk)">${fa(S.cycle)} روز</span></div><input type="range" min="21" max="40" value="${S.cycle}" data-a="c">
- <div class="lab"><span>طول خونریزی</span><span style="color:var(--pk)">${fa(S.period)} روز</span></div><input type="range" min="2" max="10" value="${S.period}" data-a="pr">
+ <div class="lab"><span>طول کل دوره</span><span style="color:var(--pk)">${fa(S.cycle)} روز</span></div><input type="range" min="21" max="40" value="${S.cycle}" data-a="c" ${EDL.cyc?'':'disabled'}>
+ <div class="lab"><span>طول خونریزی</span><span style="color:var(--pk)">${fa(S.period)} روز</span></div><input type="range" min="2" max="10" value="${S.period}" data-a="pr" ${EDL.cyc?'':'disabled'}>
+ <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">${edBtn('cyc','','','edc')}<span class="mu" style="font-size:12px">${EDL.cyc?oL('حالا مقدارها رو عوض کن و «تأیید» رو بزن.','Change the values, then tap "Done".'):oL('برای جلوگیری از تغییر اتفاقی، مقدارها قفله.','Values are locked to prevent accidental changes.')}</span></div>
  </div>
  <div class="card"><h3>💾 نسخه‌ی پشتیبان</h3><div class="mu">برای عوض کردن گوشی یا محافظت از اطلاعات، خروجی بگیر و متنش رو جایی نگه دار. برای بازگردانی، متن رو توی کادر بچسبون یا فایلش رو انتخاب کن.</div><textarea id="bk" rows="3" style="margin-top:8px" placeholder="متن پشتیبان اینجا نمایش داده می‌شه"></textarea><div class="row" style="margin-top:8px"><button class="btn" data-a="ex">خروجی گرفتن</button><button class="btn o" data-a="im">بازگردانی</button></div><input type="file" id="bf" accept=".json,application/json" style="margin-top:8px;font-size:12px"></div>
  <div class="card"><h3>🛡️ حریم خصوصی</h3><div class="mu">اطلاعاتت فقط روی مرورگر خودت ذخیره می‌شه و جایی ارسال نمی‌شه.</div><button class="btn o" style="width:100%;margin-top:8px" data-a="pvo">حریم خصوصی و قوانین</button></div>`}
@@ -1363,7 +1373,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v58';
+const APPV='v59';
 const TGP=['pw','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}
@@ -1491,7 +1501,7 @@ function kcFill(){const sel=document.getElementById('kcf');if(!sel)return;const 
 /* ===== mod11: help section ===== */
 const HPG=[['st','🚀','شروع و نکته‌های پنهان','Getting started and hidden tips'],['dt','🔒','اطلاعات و امنیت','Data and security'],['tl','🧰','ابزارها','Tools']];
 const HPE=[
-['st','cyc','چرخه روز تقویم','ویرایش روز چرخه','تو صفحه‌ی خانه دایره‌ی بزرگ رو با انگشت بچرخون تا روز چرخه‌ات رو عوض کنی. دکمه‌ی «ثبت شروع پریود امروز» هم تاریخ شروع رو ثبت می‌کنه و + و − برای جابه‌جا کردن یک‌روزه‌ست.','Edit the cycle day','On the home screen, turn the big circle with your finger to change your cycle day. The "Log period start today" button records the start date, and + and − shift it by one day.'],
+['st','cyc','چرخه روز تقویم','ویرایش روز چرخه','تو صفحه‌ی خانه زیر دایره‌ی بزرگ دکمه‌ی «ویرایش» رو بزن، بعد دایره رو با انگشت بچرخون تا روز چرخه‌ات رو عوض کنی و آخرش «تأیید» رو بزن (برای جلوگیری از تغییر اتفاقی، دایره عادی قفله). طول دوره و خونریزی تو تنظیمات هم همین‌جوری با دکمه‌ی «ویرایش» باز می‌شن. دکمه‌ی «ثبت شروع پریود امروز» هم تاریخ شروع رو ثبت می‌کنه و + و − برای جابه‌جا کردن یک‌روزه‌ست.','Edit the cycle day','On the home screen tap "Edit" under the big circle, then turn it with your finger to change your cycle day and tap "Done" (the circle is locked by default to prevent accidental changes). Cycle and period length in Settings use the same Edit button. The "Log period start today" button records the start date, and + and − shift it by one day.'],
 ['st','log','ثبت علائم حال درد خون','ثبت علائم هر روز','تب «ثبت علائم» رو باز کن و حال روحی، درد، میزان خونریزی، خواب، آب، دمای بدن و یادداشتت رو بنویس. هر چی بیشتر ثبت کنی، پیش‌بینی و آمار دقیق‌تر می‌شه. بخش‌های بسته رو با لمس باز کن.','Log symptoms every day','Open the Log tab and record mood, pain, flow, sleep, water, body temperature and notes. The more you log, the better the predictions and stats. Tap the collapsed sections to open them.'],
 ['st','mode حالت بارداری نوزاد یائسگی','تغییر حالت برنامه','Switch app mode','برنامه برای چند حالت ساخته شده: چرخه و پریود، تلاش برای بارداری، بارداری، بعد از زایمان و غیره. حالت رو از تنظیمات عوض کن تا صفحه‌ی خانه و ابزارها به وضعیتت بخورن.','Switch app mode','The app has several modes: cycle and period, trying to conceive, pregnancy, postpartum and more. Change the mode in Settings so the home screen and tools match your situation.'],
 ['st','tools ابزار مخفی مرتب پنهان','مرتب یا پنهان کردن ابزارها','Reorder or hide tools','تو تنظیمات «مدیریت ابزارها» رو باز کن تا ابزارهای بی‌مصرف رو پنهان کنی یا ترتیب رو عوض کنی. تب ابزارها فقط ۸ ابزار اصلی رو نشون می‌ده و با «نمایش همه‌ی ابزارها» بقیه باز می‌شن.','Reorder or hide tools','In Settings open "Manage tools" to hide tools you do not need or change their order. The Tools tab shows only 8 main tools; tap "Show all tools" for the rest.'],
@@ -1950,6 +1960,8 @@ document.addEventListener('click',e=>{
  else if(a==='ybm'){brStop();XS.bm=b.dataset.v;BRT.n=0}
  else if(a==='ybs'){if(BRT.on){brStop()}else{BRT.on=1;BRT.n=0;draw();brStep(0);return}}
  else if(a==='tlx'){TLALL=!TLALL}
+ else if(a==='edd'){edTog('dial')}
+ else if(a==='edc'){edTog('cyc')}
  else if(a==='dgt'){XS.dgt=b.dataset.v}
  else if(a==='dgf'){XS.dgf=b.dataset.v}
  else if(a==='dgg'){dgS().g=b.dataset.v}
