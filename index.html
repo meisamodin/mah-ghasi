@@ -37,8 +37,8 @@ h3{margin:0 0 8px;font-size:15px}
 .wd.on{background:var(--pk);color:#fff}.wd.on b{color:#fff}
 .dot{width:6px;height:6px;border-radius:50%;margin:3px auto 0;background:var(--bd)}
 .pill{display:inline-block;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600}
-.dialwrap{position:relative;width:min(300px,100%);margin:10px auto;touch-action:none}
-.dialwrap svg{width:100%;height:auto;display:block;touch-action:none;cursor:grab;user-select:none}
+.dialwrap{position:relative;width:min(300px,100%);margin:10px auto;touch-action:pan-y}
+.dialwrap svg{width:100%;height:auto;display:block;touch-action:pan-y;user-select:none}
 .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
 .mid .n{font-size:54px;font-weight:800;line-height:1.1}
 .row{display:flex;gap:8px}
@@ -68,7 +68,21 @@ input[type=range]{width:100%;accent-color:var(--pk)}
 .breath{width:130px;height:130px;margin:10px auto;border-radius:50%;background:radial-gradient(circle,var(--pu),var(--pk2));display:grid;place-items:center;color:#fff;font-weight:600;transition:transform 4s ease-in-out;box-shadow:0 0 40px #8b5cf655}
 .toast{position:fixed;inset:auto 0 90px 0;margin:auto;width:max-content;max-width:90%;background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:13px}
 @media (prefers-reduced-motion:reduce){.breath{transition:none}}
-@media print{.noprint,nav,#nav{display:none!important}body{background:#fff!important}}/* Netlify badge: keep nav above it */
+@media print{.noprint,nav,#nav{display:none!important}body{background:#fff!important}}/* v39 soft buttons + light glass nav */
+.btn{background:linear-gradient(180deg,#ffffff38,#ffffff00 55%),linear-gradient(135deg,#f43f5e,var(--pk2));border-radius:18px;box-shadow:0 6px 16px #e11d4838,inset 0 1px 0 #ffffff55;transition:transform .12s,box-shadow .12s}
+.btn:active{transform:scale(.96);box-shadow:0 2px 8px #e11d4838}
+.btn.o{background:linear-gradient(180deg,var(--card),var(--soft));border:1.5px solid var(--bd);box-shadow:0 3px 10px #e11d4810,inset 0 1px 0 #ffffffaa}
+.chip{box-shadow:0 2px 6px #e11d4810;transition:transform .12s,box-shadow .12s}.chip:active{transform:scale(.95)}
+.chip.on{background:linear-gradient(180deg,#ffffff30,#ffffff00 55%),linear-gradient(135deg,var(--pk),var(--pk2));box-shadow:0 4px 12px #e11d4833}
+.card{border-radius:24px;box-shadow:0 8px 24px #e11d4812;transition:transform .12s}.card[data-a]:active{transform:scale(.97)}
+nav{box-shadow:0 -6px 24px #e11d4812}nav button{transition:transform .12s,background .2s}nav button:active{transform:scale(.94)}
+nav button.on{background:linear-gradient(180deg,var(--soft),#fff);box-shadow:inset 0 0 0 1px #e11d4822}
+@supports (backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px)){nav{background:color-mix(in srgb,var(--card) 74%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5)}nav button.on{background:color-mix(in srgb,var(--pk) 12%,transparent)}}
+:root[data-theme="dark"] .btn{box-shadow:0 6px 16px #0007,inset 0 1px 0 #ffffff33}:root[data-theme="dark"] .btn.o{background:linear-gradient(180deg,var(--card),var(--soft));box-shadow:0 3px 10px #0005,inset 0 1px 0 #ffffff14}:root[data-theme="dark"] .card{box-shadow:0 8px 24px #0006}:root[data-theme="dark"] .chip{box-shadow:0 2px 6px #0005}:root[data-theme="dark"] nav{box-shadow:0 -6px 24px #0007}
+.chips>.card[data-a]{background:linear-gradient(160deg,var(--card) 35%,var(--soft));border-radius:26px;box-shadow:0 10px 26px #e11d4814,inset 0 1px 0 #ffffffaa}.chips>.card[data-a]>div:first-child{filter:drop-shadow(0 5px 7px #e11d4833)}
+.th{box-shadow:0 4px 12px #e11d4818;transition:transform .12s}.th:active{transform:scale(.92)}
+:root[data-theme="dark"] .chips>.card[data-a]{box-shadow:0 10px 26px #0006,inset 0 1px 0 #ffffff12}:root[data-theme="dark"] .th{box-shadow:0 4px 12px #0006}
+/* Netlify badge: keep nav above it */
 .nfb nav{bottom:64px}.nfb body::after{content:'';position:fixed;left:0;right:0;bottom:0;height:64px;background:var(--card);border-top:1px solid var(--bd);z-index:1}.nfb #app{padding-bottom:164px}.nfb .toast{bottom:154px}
 </style>
 </head>
@@ -143,7 +157,9 @@ function dial(I){
 function setDay(d){const t=today();S.start=iso(add(t,-(d-1)));save()}
 function ptr(e){const svg=$('#dial');if(!svg)return;const r=svg.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);
  let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;const d=Math.min(S.cycle,Math.floor(a/(360/S.cycle))+1);if(d!==dayOf(today())){setDay(d);draw()}}
-document.addEventListener('pointerdown',e=>{if(e.target.closest('#dial')){drag=true;ptr(e)}});
+function onRing(e){const svg=$('#dial');if(!svg)return false;const r=svg.getBoundingClientRect(),k=130/(r.width/2),x=(e.clientX-(r.left+r.width/2))*k,y=(e.clientY-(r.top+r.height/2))*k,d=Math.hypot(x,y);return d>=68&&d<=130}
+document.addEventListener('pointerdown',e=>{if(e.target.closest('#dial')&&onRing(e)){drag=true;ptr(e)}});
+document.addEventListener('touchstart',e=>{const t=e.touches[0];if(t&&e.target.closest&&e.target.closest('#dial')&&onRing(t))e.preventDefault()},{passive:false});
 document.addEventListener('pointermove',e=>{if(drag){e.preventDefault();ptr(e)}},{passive:false});
 document.addEventListener('pointerup',()=>{drag=false});
 
