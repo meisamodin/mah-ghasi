@@ -1,0 +1,94 @@
+{
+ "name": "ماه قاسی",
+ "short_name": "ماه قاسی",
+ "lang": "fa",
+ "dir": "rtl",
+ "id": "/",
+ "start_url": "./index.html",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#fff5f8",
+ "theme_color": "#fff0f5",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "description": "ماه قاسی؛ اپ فارسی ثبت و پیش‌بینی چرخه‌ی قاعدگی، علائم، PMS و سلامت بانوان. اطلاعاتت فقط روی گوشی خودت می‌مونه. ساخته‌ی تیم اروان پینگ.",
+ "categories": [
+  "health",
+  "lifestyle",
+  "medical"
+ ],
+ "prefer_related_applications": false,
+ "shortcuts": [
+  {
+   "name": "ثبت علائم امروز",
+   "short_name": "ثبت علائم",
+   "url": "./index.html?tab=log",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "سلامت و رژیم",
+   "short_name": "سلامت",
+   "url": "./index.html?tab=hl",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "اعلان‌ها و یادآورها",
+   "short_name": "اعلان",
+   "url": "./index.html?tab=not",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  }
+ ],
+ "screenshots": [
+  {
+   "src": "screenshot-1.png",
+   "sizes": "780x1688",
+   "type": "image/png",
+   "form_factor": "narrow",
+   "label": "صفحه‌ی اصلی و چرخه"
+  },
+  {
+   "src": "screenshot-2.png",
+   "sizes": "780x1688",
+   "type": "image/png",
+   "form_factor": "narrow",
+   "label": "تب سلامت"
+  }
+ ]
+}
