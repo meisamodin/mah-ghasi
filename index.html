@@ -184,9 +184,9 @@ function home0(){const I=info();
 
 const ML=['زیاد','متوسط','کم','لکه‌بینی'],MOODS=['😊 شاد','😌 آروم','🥺 حساس','😰 مضطرب','😴 خسته','😠 عصبی','😢 غمگین','⚡ پرانرژی'],PHYS=['⚡ دل‌درد','🤕 سردرد','🦴 کمردرد','🎈 نفخ','🌸 حساسیت سینه','🍫 میل به شیرینی','✨ جوش','🤢 تهوع','😵 سرگیجه','🌙 بی‌خوابی','🚽 یبوست','💧 اسهال','🎯 درد تخمک‌گذاری','💦 ترشحات','🫧 ورم','🍽️ اشتهای زیاد'],MEDS=['💊 قرص آهن','💊 مسکن','💊 مکمل (ویتامین/منیزیم)','💊 قرص ضدبارداری','💊 داروی دیگه'];
 let LD=iso(today());
-const gl=k=>S.logs[k]=Object.assign({flow:'',moods:[],phys:[],water:0,note:'',pain:0,sleep:'',ex:false,meds:[],temp:'',cus:[],en:0,st:0,sq:0,ap:'',pl:[],wt:'',ot:'',pt:'',cm:'',sx:'',pd:0,lh:''},S.logs[k]||{});
+const gl=k=>S.logs[k]=Object.assign({flow:'',moods:[],phys:[],water:0,note:'',pain:0,sleep:'',ex:false,meds:[],temp:'',cus:[],en:0,st:0,sq:0,ap:'',pl:[],wt:'',ot:'',pt:'',cm:'',sx:'',pd:0},S.logs[k]||{});
 function saveFields(){const L=gl(LD),n=$('#nt'),s=$('#sl'),t=$('#tp'),w=$('#wt');if(w)L.wt=w.value&&S.un&&S.un.w==='lb'?String(Math.round(w.value/2.2046*10)/10):w.value;if(n)L.note=n.value;if(s)L.sleep=s.value;if(t)L.temp=t.value&&S.un&&S.un.t==='f'?String(Math.round((t.value-32)*5/9*100)/100):t.value;save()}
-const hasData=L=>!!(L.flow||(L.moods||[]).length||(L.phys||[]).length||L.water>0||L.note||L.pain>0||L.sleep||L.ex||(L.meds||[]).length||L.temp||(L.cus||[]).length||L.en||L.st||L.sq||L.ap||(L.pl||[]).length||L.wt||L.ot||L.pt||L.cm||L.sx||L.pd||L.lh);
+const hasData=L=>!!(L.flow||(L.moods||[]).length||(L.phys||[]).length||L.water>0||L.note||L.pain>0||L.sleep||L.ex||(L.meds||[]).length||L.temp||(L.cus||[]).length||L.en||L.st||L.sq||L.ap||(L.pl||[]).length||L.wt||L.ot||L.pt||L.cm||L.sx||L.pd);
 const PH=d=>{const n=dayOf(d);return n<=S.period?'روزهای پریود':n>=S.cycle-6?'قبل از پریود (PMS)':n>=S.cycle-19&&n<=S.cycle-13?'روزهای باروری':'بقیه‌ی روزها'};
 function patterns(){const days=Object.keys(S.logs).filter(k=>hasData(S.logs[k]));if(days.length<3)return null;const c={};
  days.forEach(k=>{const L=S.logs[k],p=PH(parse(k));[...(L.phys||[]),...(L.moods||[]),...(L.cus||[])].forEach(s=>{c[s]=c[s]||{n:0,p:{}};c[s].n++;c[s].p[p]=(c[s].p[p]||0)+1})});
@@ -256,7 +256,6 @@ function logTab(){const L=gl(LD),isT=LD===iso(today()),d=parse(LD),cl=S.cl||[];
 <div class="card"><h3>🔒 تست‌ها و رابطه (اختیاری و خصوصی)</h3><div class="mu">فقط روی همین گوشی ذخیره می‌شه و تو «گزارش پزشک» نمیاد.</div>
  <div class="lab">🧪 تست تخمک‌گذاری</div><div class="chips">${sg(OT,'ot',L.ot)}</div>
  <div class="lab">🤰 تست بارداری</div><div class="chips">${sg(PT,'pt',L.pt)}</div>
- <div class="lab">🧪 تست تخمک‌گذاری (LH)</div><div class="chips">${sg(LHO,'lh',L.lh)}</div>${L.lh==='مثبت'?'<div class="note g" style="margin-top:8px"><span class="ic">🌸</span><div>تست LH مثبت یعنی تخمک‌گذاری معمولاً تا ۲۴ تا ۳۶ ساعت دیگه‌ست. تقویم و پیش‌بینی‌ها با همین تاریخ اصلاح می‌شن.</div></div>':''}
  ${L.pt==='مثبت'?'<div class="note p" style="margin-top:8px"><span class="ic">💗</span><div>برای تأیید و شروع مراقبت‌ها به پزشک یا مامای خودت مراجعه کن. اگه مطمئنی، تو «تنظیمات > حالت چرخه» می‌تونی حالت بارداری رو فعال کنی.</div></div>':''}
  ${L.ot==='مثبت'?'<div class="note g" style="margin-top:8px"><span class="ic">🌸</span><div>تست مثبت یعنی احتمالاً تو ۱ تا ۲ روز آینده تخمک‌گذاری می‌کنی.</div></div>':''}
  <div class="lab">💧 ترشحات</div><div class="chips">${sg(CMU,'cm',L.cm)}</div>
@@ -1351,7 +1350,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v49';
+const APPV='v50';
 const TGP=['pw','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}
@@ -1377,7 +1376,7 @@ window.addEventListener('scroll',()=>{clearTimeout(mgSave.t);mgSave.t=setTimeout
 
 /* ===== mod9: LH, appointments, doctor questions, partner message, accent colors, ttc card ===== */
 const LHO=['منفی','کم‌رنگ','مثبت'];
-function lhOvN(sd,nd,cl){try{const lo=iso(sd),hi=nd?iso(nd):'9999';let best=null;Object.keys(S.logs).forEach(k=>{if(k>=lo&&k<hi&&S.logs[k]&&S.logs[k].lh==='مثبت'&&(best===null||k<best))best=k});if(best===null)return null;const n=Math.round((parse(best)-sd)/DAY)+2;return n>=8&&n<=cl-5?n:null}catch(e){return null}}
+function lhOvN(sd,nd,cl){try{const lo=iso(sd),hi=nd?iso(nd):'9999';let best=null;Object.keys(S.logs).forEach(k=>{if(k>=lo&&k<hi&&S.logs[k]&&S.logs[k].ot==='مثبت'&&(best===null||k<best))best=k});if(best===null)return null;const n=Math.round((parse(best)-sd)/DAY)+2;return n>=8&&n<=cl-5?n:null}catch(e){return null}}
 /* appointments */
 const APT=[['سونوگرافی|Ultrasound'],['آزمایش|Lab test'],['ویزیت پزشک|Doctor visit'],['واکسن نوزاد|Baby vaccine'],['دندان‌پزشک|Dentist'],['سایر|Other']];
 function aptS(){S.apt=S.apt||[];return S.apt}
@@ -1413,7 +1412,7 @@ accApply();
 function accCard(){const c=S.acc||'pink';return`<div class="card"><h3>🎨 ${oL('رنگ برنامه','App color')}</h3><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">${ACC.map(x=>`<button data-a="yac" data-v="${x[0]}" aria-label="${oP(x[1])}" title="${oP(x[1])}" style="width:38px;height:38px;border-radius:50%;border:0;background:linear-gradient(135deg,${x[2]},${x[3]});cursor:pointer;box-shadow:${c===x[0]?'0 0 0 3px var(--bg),0 0 0 5px '+x[2]:'0 1px 3px rgba(0,0,0,.25)'}"></button>`).join('')}</div><div class="mu" style="font-size:12px;margin-top:8px">${oL('رنگ پریود (قرمز) و تخمک‌گذاری (سبز) تو تقویم همیشه ثابت می‌مونه.','The period (red) and ovulation (green) colors in the calendar always stay the same.')}</div></div>`}
 /* trying-to-conceive card */
 function ttcCard(){if(S.mode!=='ttc'||quiet())return'';const I=info(),td=iso(today()),L=S.logs[td]||{},M=calModel(),st=calStat(today(),M);if(!st)return'';const ovN=lhOvN(parse(S.start),null,S.cycle)||S.cycle-14,n=st.n,f0=ovN-5,f1=ovN+1,inW=n>=f0&&n<=f1;let sx=0;for(let k=Math.max(1,f0);k<=f1;k++){const l=S.logs[iso(add(parse(S.start),k-1))];if(l&&l.sx)sx++}
- const lhs=Object.keys(S.logs).filter(k=>k>=S.start&&S.logs[k].lh).sort(),lastL=lhs.length?S.logs[lhs[lhs.length-1]].lh:'';
+ const lhs=Object.keys(S.logs).filter(k=>k>=S.start&&S.logs[k].ot).sort(),lastL=lhs.length?S.logs[lhs[lhs.length-1]].ot:'';
  return`<div class="card"><h3>🌱 ${oL('قصد بارداری','Trying to conceive')}</h3><div style="line-height:1.9">${oL('روز','Day')} <b>${fa(n)}</b> ${oL('چرخه','of the cycle')}<br>${inW?'<b style="color:#10b981">'+oL('تو پنجره‌ی باروری هستی','You are in the fertile window')+'</b>':n<f0?fa(f0-n)+' '+oL('روز تا پنجره‌ی باروری','days until the fertile window'):oL('پنجره‌ی باروری این چرخه گذشته','The fertile window of this cycle has passed')}<br>${oL('ثبت رابطه تو پنجره‌ی باروری:','Intercourse logged in the window:')} <b>${fa(sx)}</b>${lastL?'<br>'+oL('آخرین تست LH:','Last LH test:')+' <b>'+lastL+'</b>':''}</div><div class="mu" style="font-size:12px;margin-top:6px">${oL('تخمین‌ها تقریبی‌ان. اگه بعد از ۶ تا ۱۲ ماه تلاش (بسته به سن) بارداری رخ نداد با پزشک صحبت کن.','Estimates are approximate. If pregnancy does not happen after 6 to 12 months of trying (depending on age), talk to a doctor.')}</div></div>`}
 
 function kkS(){S.kk=S.kk||{cur:null,h:[]};return S.kk}
