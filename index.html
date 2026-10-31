@@ -41,6 +41,7 @@ h3{margin:0 0 8px;font-size:15px}
 .edbtn:active{transform:scale(.96)}.edbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .edbtn.on{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-color:transparent;box-shadow:0 4px 14px #10b98144}
 @keyframes edpul{0%,100%{filter:drop-shadow(0 0 3px var(--pk))}50%{filter:drop-shadow(0 0 12px var(--pk))}}
+.dialwrap.edit,.dialwrap.edit svg{touch-action:none}
 .dialwrap.edit svg{animation:edpul 1.6s ease-in-out infinite}
 input[type=range][disabled]{opacity:.45}
 .dialwrap{position:relative;width:min(300px,100%);margin:10px auto;touch-action:pan-y}
@@ -165,7 +166,7 @@ function edBtn(k,fa_,en_,a){const on=EDL[k];return`<button class="edbtn ${on?'on
 function edTog(k){EDL[k]=EDL[k]?0:1;clearTimeout(EDT[k]);if(EDL[k])EDT[k]=setTimeout(()=>{EDL[k]=0;draw()},90000)}
 function setDay(d){const t=today();S.start=iso(add(t,-(d-1)));save()}
 function ptr(e){const svg=$('#dial');if(!svg)return;const r=svg.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);
- let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;const d=Math.min(S.cycle,Math.floor(a/(360/S.cycle))+1);if(d!==dayOf(today())){setDay(d);draw()}}
+ let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;const d=Math.min(S.cycle,Math.floor(a/(360/S.cycle))+1);if(d!==dayOf(today())){setDay(d);const y=window.scrollY;draw();window.scrollTo(0,y);clearTimeout(EDT.dial);EDT.dial=setTimeout(()=>{EDL.dial=0;draw()},90000)}}
 function onRing(e){const svg=$('#dial');if(!svg||!EDL.dial)return false;const r=svg.getBoundingClientRect(),k=130/(r.width/2),x=(e.clientX-(r.left+r.width/2))*k,y=(e.clientY-(r.top+r.height/2))*k,d=Math.hypot(x,y);return d>=68&&d<=130}
 document.addEventListener('pointerdown',e=>{if(e.target.closest('#dial')&&onRing(e)){drag=true;ptr(e)}});
 document.addEventListener('touchstart',e=>{const t=e.touches[0];if(t&&e.target.closest&&e.target.closest('#dial')&&onRing(t))e.preventDefault()},{passive:false});
@@ -1373,7 +1374,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v59';
+const APPV='v60';
 const TGP=['pw','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}
