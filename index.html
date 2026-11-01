@@ -1378,7 +1378,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v81';
+const APPV='v82';
 const TGP=['pw','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}

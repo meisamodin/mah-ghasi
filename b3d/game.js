@@ -28,14 +28,14 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  // ------------ renderer ------------
  const o=o0();let QL=o.b3v===2&&o.b3q!==undefined?o.b3q:1;
  let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:QL<1,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.test})}catch(e){root.remove();if(W_.toast)W_.toast(oL('مرورگر WebGL را پشتیبانی نمی‌کند','WebGL is not supported'));return null}
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.85;renderer.outputColorSpace=THREE.SRGBColorSpace;
  let scene,E,pins,ball,bowlers=[],cam,composer,bloom,artCv,artCx,artT=0,artS,pcount=0;
  const dprOf=q=>q>=2?2.5:q>=1?1.75:1.25;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
  function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?58:44;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
  // ------------ scene ------------
  function build(){if(scene){scene.traverse(x=>{if(x.geometry)x.geometry.dispose&&x.geometry.dispose()})}scene=new THREE.Scene();const ti=o0().bt||0;artCv=document.createElement('canvas');artCv.width=1024;artCv.height=384;artCx=artCv.getContext('2d');artS={stars:Array.from({length:46},()=>[Math.random(),Math.random(),rnd(.8,2),rnd(1,3)]),f:0,k:0};
   E=buildEnv(scene,renderer,ti,QL,artCv);pins=A.makePins(scene,E);
-  scene.add(new THREE.HemisphereLight(0xc8d0ff,0x4a3a66,.7));cam=new THREE.PerspectiveCamera(58,1,.05,90);cam.position.set(.4,1.7,4.6);scene.add(cam);
+  scene.add(new THREE.HemisphereLight(0xc8d0ff,0x4a3a66,.35));cam=new THREE.PerspectiveCamera(58,1,.05,90);cam.position.set(.4,1.7,4.6);scene.add(cam);
   ball=A.makeBall(...ballCols());scene.add(ball);
   [0,1].forEach(i=>{const b=A.makeBowler(i?{shirt:0x1f9d57,shirt2:0x0e5c34,skin:0xa8744f,hair:0xc9a15a,pants:0x3b3d48,num:9}:shirtFor(ti));b.visible=false;b.scale.setScalar(.9);scene.add(b);bowlers[i]=b});
   // bumpers
@@ -87,7 +87,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   GA.g.visible=show;GA.rib.visible=GA.ring.visible=GA.disc.visible=GA.bar.visible=show&&G.st!=='roll';if(!show){if(G.st==='aim'||G.st==='walk')GA.pow=lerp(GA.pow,0,.2);return}
   const n=GA.pow*NSEG,tt=T;GA.segs.forEach((b,i)=>{const on=Math.max(0,Math.min(1,n-i));b.material.emissiveIntensity=on*(1.6+.5*Math.sin(tt*8+i*.5));b.material.color.copy(b.userData.c).multiplyScalar(.12+.88*on);b.scale.z=1+on*.6});
   GA.g.position.set(cl(G.bx-.62,-.98,-.4),0,1.0);GA.g.lookAt(cam.position.x,0,cam.position.z);
-  const bx=G.bx,px=cl(bx+GA.ang*.915,-.62,.62),off=Math.abs(px-(bx<0?-.035:.035)*0-0.035),acc=cl(1-off/.35,0,1);GA.acc=lerp(GA.acc||0,acc,.4);
+  const bx=G.bx,px=cl(bx+GA.ang*.915+(.035-bx)*.6,-.62,.62),off=Math.abs(px-(bx<0?-.035:.035)*0-0.035),acc=cl(1-off/.35,0,1);GA.acc=lerp(GA.acc||0,acc,.4);
   const col=GA.acc>.75?0x7ee787:GA.acc>.45?0xffd24a:0xff7a7a;[GA.ring,GA.disc].forEach(m=>m.material.color.setHex(col));GA.rib.material.color.setHex(col);
   GA.ring.position.set(px,.03,-18.29);GA.disc.position.set(px,.025,-18.29);GA.ring.scale.setScalar(1+.12*Math.sin(tt*6));
   const z0=-.2,z1=-18.29,len=z0-z1;GA.rib.scale.y=len;GA.rib.position.set((bx+px)/2,.02,(z0+z1)/2);GA.rib.rotation.set(-Math.PI/2,0,-Math.atan2(px-bx,len)*0,'XYZ');GA.rib.rotation.z=Math.atan2(px-bx,len);
@@ -159,7 +159,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  canvas.addEventListener('pointermove',e=>{const d=G.drag;if(!d)return;const p=xy(e);d.pts.push(p);if(d.pts.length>60)d.pts.shift();let low=d.pts[0].y;d.pts.forEach(q=>low=Math.max(low,q.y));G.bx=cl(d.bx0+(p.x-d.x0)/p.w*1.25,-.44,.44);G.pull=cl((low-d.y0)/(p.h*.1),0,1)*(1-cl((low-p.y)/(p.h*.1),0,1)*.3)});
  canvas.addEventListener('pointerup',e=>{const d=G.drag;if(!d)return;G.drag=null;const f=flick(d);if(!f){G.pull=0;return}throwBall(f.vx,f.vz,f.sp)});
  function flick(d){const A_=d.pts;if(A_.length<3)return null;let mi=0;A_.forEach((q,i)=>{if(q.y>=A_[mi].y)mi=i});const U=A_.slice(mi);if(U.length<3)return null;const e=U[U.length-1];let i=U.length-1;while(i>0&&e.t-U[i-1].t<150)i--;const a=U[i],dt=Math.max(16,e.t-a.t)/1000,dy=a.y-e.y,dx=e.x-a.x;if(dy<18)return null;const sp=dy/dt;if(sp<140)return null;
-  const k=Math.min(1,(sp-140)/1700),f=U[0],m=U[U.length>>1],tot=Math.max(50,f.y-e.y),cur=(e.x-2*m.x+f.x)/tot,ang=cl(dx/dy,-.6,.6),v=6.8+k*4.2;return{vz:-v,vx:ang*.05*v,sp:cl(cur*1.8,-1,1)}}
+  const k=Math.min(1,(sp-140)/1700),f=U[0],m=U[U.length>>1],tot=Math.max(50,f.y-e.y),cur=(e.x-2*m.x+f.x)/tot,ang=cl(dx/dy,-.6,.6),v=6.8+k*4.2,asst=(.035-G.bx)/18.29*v*.6;return{vz:-v,vx:ang*.05*v+asst,sp:cl(cur*1.8,-1,1)}}
  // ------------ throwing ------------
  function throwBall(vx,vz,sp){if(G.st!=='aim'&&G.st!=='cpuaim')return;G.st='throw';G.u=G.pull>.15?.42*G.pull*.9:0;G.rel=false;G.tp={vx,vz,sp};G.pull=0;hint('')}
  function release(){const B=bowlers[G.turn].userData.J.AR.hand,v=new THREE.Vector3();B.getWorldPosition(v);const o=o0(),cp=G.vs&&G.turn===1,w=cp?1:(o.bwt||0),oil=OIL();
