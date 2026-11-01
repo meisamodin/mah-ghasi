@@ -5,7 +5,7 @@ import {UnrealBloomPass} from './postprocessing/UnrealBloomPass.js';
 import {OutputPass} from './postprocessing/OutputPass.js';
 import {buildEnv,TH} from './env.js';
 import * as A from './actors.js';
-import * as P from './phys.js';
+import * as P from './phys3.js';
 const _C={},W_=new Proxy({},{get(_,k){if(k in _C)return _C[k];let v;try{v=(0,eval)(String(k))}catch(e){v=undefined}if(v!==undefined)_C[k]=v;return v}}),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,rnd=(a,b)=>a+Math.random()*(b-a);
 const oL=(f,e)=>W_.oL?W_.oL(f,e):f,fa=n=>W_.fa?W_.fa(n):String(n);
 let CUR=null;
@@ -51,12 +51,12 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  function updParts(dt){const p=PS.g.attributes.position,c=PS.g.attributes.color;for(let i=0;i<PS.n;i++){if(PS.l[i]<=0){p.setY(i,-50);continue}PS.l[i]-=dt;PS.v[i*3+1]-=6*dt;p.setXYZ(i,p.getX(i)+PS.v[i*3]*dt,Math.max(.02,p.getY(i)+PS.v[i*3+1]*dt),p.getZ(i)+PS.v[i*3+2]*dt);if(PS.l[i]<.3){const f=PS.l[i]/.3;c.setXYZ(i,c.getX(i)*f,c.getY(i)*f,c.getZ(i)*f)}}p.needsUpdate=true;c.needsUpdate=true}
  // ------------ game state ------------
  const G={st:'idle',t:0,turn:0,vs:0,P:null,S:null,bx:0,pull:0,u:0,rel:false,cm:1,ban:null,over:false,slow:0,rec:null,recT:0,rep:null,cpu:null,walkT:0,hold:true,drag:null,ts:1,over2:0};
- function newGame(){const o=o0();G.vs=o.bvs||0;G.P=[{rolls:[],f:0,k:0,streak:0,maxStreak:0,gutN:0},{rolls:[],f:0,k:0,streak:0,maxStreak:0,gutN:0}];G.turn=0;G.over=false;G.earn=0;fin.classList.remove('show');G.S={pins:P.rack(),ball:null,bump:!!o.bbump};G.pins=G.S.pins;pins.forEach((m,i)=>A.poseCap(m,G.S.pins[i],0));scoreboard();startTurn(true)}
+ function newGame(){const o=o0();G.vs=o.bvs||0;G.P=[{rolls:[],f:0,k:0,streak:0,maxStreak:0,gutN:0},{rolls:[],f:0,k:0,streak:0,maxStreak:0,gutN:0}];G.turn=0;G.over=false;G.earn=0;fin.classList.remove('show');G.S=G.S||P.newSim();P.rackPins(G.S);P.setBumpers(G.S,!!o.bbump);G.S.ball=null;G.S.pins.forEach((p,i)=>P.poseBody(pins[i],p));scoreboard();startTurn(true)}
  const act=()=>G.P[G.turn];
- function startTurn(first){const o=o0();G.st='walk';G.t=0;G.rel=false;G.pull=0;G.u=0;G.bx=0;G.cpu=null;G.plan=null;G.pick=null;G.fcomp=false;bowlers.forEach((b,i)=>b.visible=(i===G.turn));
+ function startTurn(first){const o=o0();G.st='walk';G.t=0;G.rel=false;G.pull=0;G.u=0;G.bx=0;G.cpu=null;G.plan=null;G.pick=null;G.fcomp=false;G.pt=0;bowlers.forEach((b,i)=>b.visible=(i===G.turn));
   const isC=G.vs&&G.turn===1;const cols=isC?[['#ff7a7a','#5a0d0d','#ffe2e2'],'stripe']:ballCols();ball.userData.sphere.material.map=A.ballTexture(cols[0],cols[1],G.turn+3);ball.userData.sphere.material.needsUpdate=true;
   G.walkDur=o.bskip?.6:3.2;banner(isC?oL('نوبت حریف','CPU turn'):(G.vs?oL('نوبت شما','Your turn'):''),isC?'#ff9a9a':'#7ee787',true);
-  hint('');if(isC)G.plan=P.planGen(G.S.pins.filter(p=>!p.st&&!p.gone),{N:20,oz:OIL()[0],ol:OIL()[1],om:OIL()[2],m:8,hk:1});G.planRes=[];
+  hint('');if(isC)G.pick=cpuPick();
   const b=bowlers[G.turn];b.position.set(E.brPos.x+.5,0,E.brPos.z);b.rotation.y=Math.PI*.5*0;ball.visible=true;ball.position.copy(E.brPos).add(new THREE.Vector3(0,.0,0));camSnap()}
  const OIL=()=>P.OIL[o0().boil||0];
 
@@ -97,7 +97,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  const CT={p:new THREE.Vector3(.4,1.7,4.6),l:new THREE.Vector3(0,.4,-8),k:4,fov:58,shake:0};const LK=new THREE.Vector3();
  function camSnap(){updCam(0.0,true)}
  function setCam(px,py,pz,lx,ly,lz,k,fovm){CT.p.set(px,py,pz);CT.l.set(lx,ly,lz);CT.k=k||4;CT.fm=fovm||1}
- function directCam(dt){const bx=G.bx,B=G.S&&G.S.ball,o=o0();
+ function directCam(dt){const bx=G.bx,B=G.S&&G.S.ball&&!G.S.ball.gone?G.S.ball:null,o=o0();
   if(G.st==='walk'){const k=G.t/G.walkDur;setCam(lerp(1.8,.5,k),2.1,6.0,lerp(.9,0,k),.55,lerp(.5,-5,k),2.5)}
   else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.5+.45,1.95,5.9,bx*.6,.3,-7.5,4.5)}
   else if(G.st==='throw'){setCam(bx*.5+.5,1.85,5.5,bx*.8,.3,-6,5)}
@@ -128,7 +128,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   +`<h4>${oL('کمک','Assist')}</h4><div class="ch"><button data-k="t:bbump" class="${o.bbump?'on':''}">${oL('سپر ناودان','Bumpers')}</button><button data-k="t:baim" class="${o.baim?'on':''}">${oL('خط راهنما','Aim line')}</button><button data-k="t:bskip" class="${o.bskip?'on':''}">${oL('بدون نمایش بازیکن','Skip walk')}</button><button data-k="t:brepoff" class="${o.brepoff?'on':''}">${oL('بدون بازپخش','No replay')}</button></div>`;
   sheet.classList.add('open');G.paused=true}
  sheet.onclick=e=>{const b=e.target.closest('button');if(!b)return;const o=o0(),k=b.dataset.k;if(k==='close'){sheet.classList.remove('open');G.paused=false;return}
-  if(k.startsWith('t:')){const kk=k.slice(2);o[kk]=o[kk]?0:1;W_.gxSave();if(kk==='bbump'){G.S.bump=!!o.bbump;E.bump.forEach(m=>m.visible=!!o.bbump)}openSheet();return}
+  if(k.startsWith('t:')){const kk=k.slice(2);o[kk]=o[kk]?0:1;W_.gxSave();if(kk==='bbump'){P.setBumpers(G.S,!!o.bbump)}openSheet();return}
   const i=+b.dataset.i;if(k==='bbc'){const bl=W_.BWBALLS,bb=bl[i];o.bown=o.bown||[];if(bb.cost&&!o.bown.includes(i)){if((o.coin||0)<bb.cost){W_.toast&&W_.toast(oL('سکه‌ی کافی نداری','Not enough coins'));return}o.coin-=bb.cost;o.bown.push(i)}o.bbc=i;W_.gxSave();ball.userData.sphere.material.map=A.ballTexture(...ballCols(),3);ball.userData.sphere.material.needsUpdate=true;openSheet();return}
   o[k]=i;if(k==='b3q')o.b3v=2;W_.gxSave();if(k==='bt'||k==='b3q'||k==='bvs'){if(k==='b3q'){QL=i;dprMax=dprOf(QL);PR=Math.min(W_.devicePixelRatio||1,dprMax)}sheet.classList.remove('open');G.paused=false;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;build();newGame()}else openSheet();quick()};
 
@@ -145,7 +145,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   ['b3q',oL('کیفیت','Quality'),[oL('کم','Low'),oL('بالا','High'),oL('اولترا','Ultra')][QL],0]];
   const el=hud.querySelector('#b3q');el.innerHTML=items.map(it=>`<button class="tl ${it[3]?'on':''}" data-q="${it[0]}"><span>${it[1]}</span>${it[2]}</button>`).join('')}
  function quickTap(k){const o=o0(),bl=W_.BWBALLS||[],N={bvs:4,bt:TH.length,boil:3,bbc:bl.length,bwt:3,b3q:3};
-  if(k==='bbump'||k==='baim'){o[k]=o[k]?0:1;W_.gxSave();if(k==='bbump'){G.S.bump=!!o.bbump}quick();return}
+  if(k==='bbump'||k==='baim'){o[k]=o[k]?0:1;W_.gxSave();if(k==='bbump'){P.setBumpers(G.S,!!o.bbump)}quick();return}
   let v=((o[k]||0)+1)%N[k];if(k==='b3q')v=((QL)+1)%3;
   if(k==='bbc'){let g=0;while(g++<20){const b=bl[v];o.bown=o.bown||[];if(!b.cost||o.bown.includes(v))break;if((o.coin||0)>=b.cost&&g===1&&0){}v=(v+1)%N.bbc}o.bbc=v;W_.gxSave();ball.userData.sphere.material.map=A.ballTexture(...ballCols(),3);ball.userData.sphere.material.needsUpdate=true;quick();return}
   o[k]=v;if(k==='b3q')o.b3v=2;W_.gxSave();
@@ -163,7 +163,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  // ------------ throwing ------------
  function throwBall(vx,vz,sp){if(G.st!=='aim'&&G.st!=='cpuaim')return;G.st='throw';G.u=G.pull>.15?.42*G.pull*.9:0;G.rel=false;G.tp={vx,vz,sp};G.pull=0;hint('')}
  function release(){const B=bowlers[G.turn].userData.J.AR.hand,v=new THREE.Vector3();B.getWorldPosition(v);const o=o0(),cp=G.vs&&G.turn===1,w=cp?1:(o.bwt||0),oil=OIL();
-  const b=P.mkBall(cl(v.x,-.5,.5),-.12,G.tp.vx,G.tp.vz,G.tp.sp,{m:[5.4,6.8,7.9][w],hk:[1.25,1,.78][w],oz:oil[0],ol:oil[1],om:oil[2]});b.y=Math.max(.108,v.y-.05);b.drop=1;G.S.ball=b;G.S.bump=!!o.bbump;G.before=P.alive(G.S);G.st='roll';G.rel=true;G.t=0;G.slowed=false;G.gutterFlag=false;G.cm=o.bcam?o.bcam:1;G.rec=[];G.recT=0;G.hit=0;
+  const b=P.launch(G.S,cl(v.x,-.5,.5),Math.min(.4,Math.max(.12,v.y-.05)),-.12,G.tp.vx,G.tp.vz,G.tp.sp,{m:[5.4,6.8,7.9][w],hk:[1.25,1,.78][w],oz:oil[0],ol:oil[1],om:oil[2]});P.setBumpers(G.S,!!o.bbump);G.before=P.aliveSim(G.S);G.st='roll';G.rel=true;G.t=0;G.slowed=false;G.gutterFlag=false;G.cm=o.bcam?o.bcam:1;G.rec=[];G.recT=0;G.hit=0;
   if(W_.gxTone){W_.gxTone(110,.4,.05);W_.gxVib&&W_.gxVib(14)}spawn(b.x,.05,b.z,10,0xffffff,.5,.5)}
  // ------------ physics events ------------
  let lastSnd=0;function ev(k,a){const n=performance.now();if(k==='hit'||k==='pp'||k==='topple'){if(n-lastSnd>38){lastSnd=n;W_.gxTone&&W_.gxTone(220+rnd(0,600),.08,Math.min(.07,.02+(a&&a.x===undefined?a:1)*.03));if(k==='hit')W_.gxVib&&W_.gxVib(10)}}
@@ -187,24 +187,21 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
    else{const u=sm((k-p2)/(1-p2)),sx=E.brPos.x+.35,sz=E.brPos.z+.1;b.position.set(lerp(sx,G.bx,u),0,lerp(sz,.75,u));const dx=G.bx-sx,dz=.75-sz;b.rotation.y=lerp(-Math.PI/2+.6,Math.PI,0)*0+Math.atan2(-dx*.0+(-(dx)),-dz)*(1-u)+0;b.rotation.y=Math.atan2(-dx,-dz)*(1-u*u);A.setPose(b,A.poseWalk(G.t*7.5,true));hold(b)}
    if(G.t>=d){G.st=G.vs&&G.turn===1?'cpuaim':'aim';G.t=0;b.position.set(G.bx,0,.75);b.rotation.y=0;hint(G.vs&&G.turn===1?'':oL('توپ را بگیر و چپ و راست ببر، عقب بکش، بعد تند بالا بکش','Drag to aim, pull back, then flick up fast'))}}
   if(G.st==='aim'||G.st==='cpuaim'){b.position.set(G.bx,0,.75);b.rotation.y=0;const pu=G.pull*.42;if(G.pull>.02)A.setPose(b,A.poseThrow(pu));else A.setPose(b,A.poseStance(T));hold(b);
-   if(G.st==='cpuaim'){if(G.plan){for(let i=0;i<4;i++){const r=G.plan.next();if(r.done){G.plan=null;G.pick=P.pickFrom(G.planRes,G.vs);G.pt=0;break}G.planRes.push(r.value)}}
-    else if(G.pick){G.pt+=dtr;const k=cl(G.pt/.9,0,1);G.bx=lerp(0,G.pick.bx,sm(k));G.pull=cl((G.pt-.9)/.45,0,1);if(G.pt>1.4){throwBall(G.pick.vx,G.pick.vz,G.pick.sp)}}}}
+   if(G.st==='cpuaim'){if(G.pick){G.pt+=dtr;const k=cl(G.pt/.9,0,1);G.bx=lerp(0,G.pick.bx,sm(k));G.pull=cl((G.pt-.9)/.45,0,1);if(G.pt>1.4){throwBall(G.pick.vx,G.pick.vz,G.pick.sp)}}}}
   if(G.st==='throw'){G.u+=dtr/1.05;b.position.set(G.bx,0,.75-.5*sm(cl((G.u-.2)/.6,0,1)));A.setPose(b,A.poseThrow(Math.min(1,G.u)));hold(b);if(G.u>=.72&&!G.rel)release();}
   if(G.rel&&G.st!=='throw'||(G.st==='throw'&&G.rel)){}
   // follow-through bowler stays visible during roll
   if(G.st==='roll'||G.st==='settle'||G.st==='sweep'){if(G.rel){const u=Math.min(1,.72+G.t*.5);b.position.z=.25;b.position.x=G.bx;A.setPose(b,A.poseThrow(Math.min(1,u)))}
    if(G.t>1.6)b.visible=false}
   // physics
-  if(G.st==='roll'||G.st==='settle'){const S=G.S,n=Math.max(1,Math.ceil(dt/.004)),h=dt/n;for(let i=0;i<n;i++)P.step(S,h,ev);
-   const B=S.ball;if(B){B.t+=0;ball.visible=true;if(B.drop){B.y=Math.max(.108,B.y-dt*3.2);if(B.y<=.1081)B.drop=0}ball.position.set(B.x,B.gut?.05:B.y,B.z);_ax.set(0,1,0).cross(_v.set(B.vx,0,B.vz));const sp=Math.hypot(B.vx,B.vz);if(sp>.01){_ax.normalize();_q.setFromAxisAngle(_ax,sp*dt/B.r);ball.quaternion.premultiply(_q)}
-    if(Math.random()<dt*14&&!B.gut)spawn(B.x+rnd(-.03,.03),.01,B.z+.05,1,0xfff4d6,.25,.35);if(G.rumbleT===undefined||T-G.rumbleT>.17){G.rumbleT=T;if(!B.gut)W_.gxTone&&W_.gxTone(65+Math.abs(B.vz)*3,.2,.02)}}
-   else if(G.st==='roll'){G.st='settle';G.t=0;ball.visible=false}
-   if(G.rec&&G.rec.length<420){G.recT+=dtr;if(G.recT>=1/60){G.recT=0}}}
+  if(G.st==='roll'||G.st==='settle'||G.st==='replay'&&0){const S=G.S;P.stepSim(S,dt,ev);
+   const B=S.ball;if(B&&!B.gone){ball.visible=true;ball.position.copy(B.body.position);ball.quaternion.copy(B.body.quaternion);
+    if(Math.random()<dt*14&&!B.gut)spawn(B.x+rnd(-.03,.03),.01,B.z+.05,1,0xfff4d6,.25,.35);if(G.rumbleT===undefined||T-G.rumbleT>.17){G.rumbleT=T;if(!B.gut&&B.y<.2)W_.gxTone&&W_.gxTone(65+Math.abs(B.vz)*3,.2,.02)}}
+   else if(G.st==='roll'){G.st='settle';G.t=0;ball.visible=false}}
   // pins pose
-  if(G.S&&G.st!=='sweep')G.S.pins.forEach(p=>{if(p.drop>0)p.drop=Math.max(0,p.drop-dtr*2.2)});
-  if(G.S){for(let i=0;i<10;i++)A.poseCap(pins[i],G.S.pins[i],T)}
-  if(G.rec&&(G.st==='roll'||G.st==='settle')&&G.rec.length<420&&(!G.S.ball||G.S.ball.z<-6))recFrame();
-  if(G.st==='settle'){if(G.t>.6&&(P.quiet(G.S)||G.t>5))evaluate()}
+  if(G.S&&G.st!=='replay'){for(let i=0;i<10;i++)P.poseBody(pins[i],G.S.pins[i])}
+  if(G.rec&&(G.st==='roll'||G.st==='settle')&&G.rec.length<420&&(!G.S.ball||G.S.ball.gone||G.S.ball.z<-6))recFrame();
+  if(G.st==='settle'){if(G.t>.6&&(P.quietSim(G.S)||G.t>6))evaluate()}
   if(G.st==='replay')stepReplay(dtr);
   if(G.st==='sweep')stepSweep(dtr);
   if(G.over){G.over2+=dtr}
@@ -217,7 +214,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  const sm=t=>t*t*(3-2*t);
  function hold(b){const v=new THREE.Vector3();b.userData.J.AR.hand.getWorldPosition(v);ball.visible=true;ball.position.set(v.x,v.y-.07,v.z-.01);ball.quaternion.set(0,0,0,1)}
  // ------------ evaluate roll ------------
- function evaluate(){const S=G.S,A_=act(),kn=G.before-P.alive(S),strike=G.before===10&&kn===10,spare=!strike&&P.alive(S)===0&&kn>0;
+ function evaluate(){const S=G.S,A_=act(),kn=G.before-P.aliveSim(S),strike=G.before===10&&kn===10,spare=!strike&&P.aliveSim(S)===0&&kn>0;
   A_.streak=strike?(A_.streak||0)+1:0;A_.maxStreak=Math.max(A_.maxStreak||0,A_.streak);if(kn===0&&G.gutterFlag)A_.gutN=(A_.gutN||0)+1;
   const f0=A_.f,done=W_.bwAfter(A_,kn,G.before);G.fcomp=A_.f>f0;G.done=done;const cpu=G.vs&&G.turn===1,pre=cpu?oL('حریف: ','CPU: '):'';
   if(strike){banner(pre+(A_.streak===3?oL('ترکی! ۳ استرایک','TURKEY!'):A_.streak>3?oL('استرایک ×','STRIKE ×')+fa(A_.streak):oL('استرایک!','STRIKE!')),'#ffd24a');confetti(60);[523,659,784,1047].forEach((f,i)=>setTimeout(()=>W_.gxTone&&W_.gxTone(f,.3,.06),i*110));if(!cpu){W_.bwAch&&W_.bwAch('st1','اولین استرایک','First strike');if(A_.streak===3)W_.bwAch&&W_.bwAch('turkey','ترکی: ۳ استرایک پشت‌سرهم','Turkey: 3 strikes in a row')}}
@@ -225,31 +222,23 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   else if(kn===0)banner(pre+(G.gutterFlag?oL('ناودان!','Gutter ball!'):oL('ناکام','Miss')),'#ff9a9a',true);else banner(pre+fa(kn)+' '+oL('مهره','pins'),'#fff',true);
   scoreboard();
   const wantRep=strike&&!o0().brepoff&&G.rec&&G.rec.length>40;
-  if(wantRep){G.st='replay';G.rep={t:0,i:0,cm:[2,3,4][Math.floor(Math.random()*3)],skip:0};G.hold=true;showRep(true)}else{G.st='sweep';G.sw=0;G.t=0}}
+  if(wantRep){G.st='replay';G.rep={t:0,i:0,cm:[2,3,4][Math.floor(Math.random()*3)],skip:0};G.hold=true;showRep(true)}else{G.st='sweep';G.sw=0;G.t=0;P.sweepStart(G.S)}}
  function showRep(on){const e=hud.querySelector('#b3ban');e.innerHTML=on?`<span style="display:inline-block;background:rgba(0,0,0,.6);color:#fff;border-radius:14px;padding:6px 14px;font:800 13px Tahoma"><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff3b4a;margin-left:6px"></i>${oL('بازپخش آهسته — برای رد کردن بزن','Slow-mo replay — tap to skip')}</span>`:''}
  function stepReplay(dt){const R=G.rec,rp=G.rep;rp.t+=dt;rp.i+=dt*60*.4;const i=Math.min(R.length-1,Math.floor(rp.i)),F=R[i];if(F.b){ball.visible=true;ball.position.set(F.b[0],F.b[1],F.b[2]);ball.quaternion.set(F.b[3],F.b[4],F.b[5],F.b[6])}else ball.visible=false;
   F.p.forEach((q,k)=>{pins[k].visible=!!q[7];pins[k].position.set(q[0],q[1],q[2]);pins[k].quaternion.set(q[3],q[4],q[5],q[6])});
-  if(rp.i>R.length+50||rp.skip){showRep(false);pins.forEach(m=>m.visible=true);G.S.pins.forEach((p,k)=>A.poseCap(pins[k],p,T));ball.visible=false;G.st='sweep';G.sw=0;G.t=0;G.rec=null}}
+  if(rp.i>R.length+50||rp.skip){showRep(false);pins.forEach(m=>m.visible=true);G.S.pins.forEach((p,k)=>P.poseBody(pins[k],p));ball.visible=false;G.st='sweep';G.sw=0;G.t=0;G.rec=null;P.sweepStart(G.S)}}
  function confetti(n){const cols=[0xffd24a,0xff6b9d,0x22e8ff,0xa78bfa,0x7ee787];for(let i=0;i<n;i++)spawn(rnd(-.6,.6),rnd(1,2.6),rnd(-14,-10),1,cols[i%5],1.6,1.8)}
  // ------------ sweep & next ------------
- function stepSweep(dt){G.sw+=dt;const S=G.S,k=G.sw,bar=E.bar;
-  // phases: 0-.6 pins lift, bar lower; .6-1.6 sweep; 1.6-2.2 bar rises; 2.2 reset
-  const lift=cl(k/.5,0,1)*(k>1.7?1-cl((k-1.7)/.4,0,1):1);
-  S.pins.forEach(p=>{if(!p.st&&!p.gone)p.drop=.3*lift});
-  if(k<.6){bar.position.set(0,lerp(1.6,.06,sm(cl(k/.6,0,1))),-16.3)}
-  else if(k<1.7){const u=sm((k-.6)/1.1);bar.position.set(0,.06,lerp(-16.3,-19.5,u));S.pins.forEach(p=>{if(p.st&&!p.gone&&p.z>bar.position.z-.1){p.vz=-1.6;p.vx*=.5}});for(let i=0;i<3;i++)P.step({pins:S.pins.filter(p=>p.st&&!p.gone),ball:null},dt/3)}
-  else if(k<2.2){bar.position.set(0,lerp(.06,1.6,sm((k-1.7)/.5)),lerp(-19.5,-16.3,sm((k-1.7)/.5)))}
-  if(k>1.9&&!G.swept){G.swept=1;S.pins.forEach(p=>{if(p.st)p.gone=1;p.drop=0})}
-  if(k>2.3){G.swept=0;bar.position.set(0,1.6,-16.3);nextAfterSweep()}}
+ function stepSweep(dt){G.sw+=dt;const S=G.S;P.stepSim(S,dt,null);const done=P.sweepStep(S,G.sw,dt);E.bar.position.set(S.bar.position.x,S.bar.position.y,S.bar.position.z);if(done){nextAfterSweep()}}
  function nextAfterSweep(){const A_=act(),vs=G.vs;
-  if(vs){if(G.turn===0&&(G.done||G.fcomp)){if(G.done){G.done=false;A_.reset=true}G.turn=1;G.S.pins=G.pins=resetPins(A_);return startTurn()}
-   if(G.turn===1&&G.fcomp&&!G.done){G.turn=0;G.S.pins=resetPins(A_);return startTurn()}
+  if(vs){if(G.turn===0&&(G.done||G.fcomp)){if(G.done){G.done=false;A_.reset=true}G.turn=1;resetPins(A_);return startTurn()}
+   if(G.turn===1&&G.fcomp&&!G.done){G.turn=0;resetPins(A_);return startTurn()}
    if(G.turn===1&&G.done){G.turn=0;return gameOver()}}
   if(G.done)return gameOver();
-  G.S.pins=resetPins(A_);startTurn()}
- function resetPins(A_){if(A_.reset||!(G.S.pins.some(p=>!p.st&&!p.gone))){const r=P.rack();r.forEach(p=>p.drop=.9);return r}return G.S.pins.filter(p=>!p.gone&&!p.st).map(p=>({...p,vx:0,vz:0,wob:0,drop:0}))&&refill()}
- function refill(){// keep standing pins at their positions, others gone
-  const old=G.S.pins;old.forEach(p=>{if(p.st||p.gone)p.gone=1});return old}
+  resetPins(A_);startTurn()}
+ function resetPins(A_){const standing=G.S.pins.some(p=>!p.gone&&p.lift);if(A_.reset||!standing){P.sweepEnd(G.S);P.rackPins(G.S)}else P.sweepEnd(G.S);G.S.ball=null}
+ function cpuPick(){const lv=G.vs||1,sd=[0,.17,.095,.05][lv],st=G.S.pins.filter(p=>!p.gone&&!P.pinDown(p)),gs=()=>{let u=0;while(!u)u=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(6.283*Math.random())};let tx=-.05,k=1;if(st.length<10&&st.length){tx=st.reduce((a,p)=>a+p.hx,0)/st.length;k=.6}
+  const v=8+Math.random()*1.4,bx=cl(tx*.5+gs()*.03,-.35,.35),te=cl(tx+gs()*sd*k,-.5,.5);return{bx,vx:(te-bx)/18.29*v,vz:-v,sp:0}}
  // ------------ game over ------------
  function stats(i){const F=frames(G.P[i].rolls),all=[];F.forEach(f=>f.m.forEach(m=>all.push(m)));const fb=[];let bf=0;F.forEach(f=>{if(f.m.length)fb.push(f.m[0]==='X'?10:f.m[0]);if(f.s!==null&&f.s!==undefined)bf=Math.max(bf,f.s)});
   return{tot:W_.bwTotal(G.P[i].rolls),st:all.filter(m=>m==='X').length,sp:all.filter(m=>m==='/').length,gut:G.P[i].gutN||0,avg:fb.length?Math.round(fb.reduce((a,b)=>a+b,0)/fb.length*10)/10:0,bf,ms:G.P[i].maxStreak||0}}

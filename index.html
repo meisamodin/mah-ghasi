@@ -1378,7 +1378,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v83';
+const APPV='v84';
 const TGP=['pw','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}
@@ -1656,7 +1656,7 @@ const GXG=[
 ['gar','🌷','باغ آرام','Calm garden','هر جا بزنی یه گل می‌روئه','A flower grows wherever you tap','#bbf7d0,#fde68a'],
 ['zen','🪨','ماسه‌ی ذن','Zen sand','روی ماسه خط بکش و آروم باش','Rake lines in the sand and relax','#fde68a,#e7d9b6'],
 ['puz','🧩','پازل رنگی','Color puzzle','بدون زمان و امتیاز؛ رنگ‌ها رو مرتب کن','No timer, no score; put the colors in order','#a5f3fc,#fda4af'],
-['bwl','🎳','بولینگ','Bowling','ده فریم با تم‌ها و نورپردازی‌های مختلف','Ten frames with different themes and lighting','#c4b5fd,#67e8f9']];
+['bwl','🎳','بولینگ','Bowling','بولینگ سه‌بعدی واقعی با فیزیک واقعی','Real 3D bowling with real physics','#c4b5fd,#67e8f9']];
 const GX={g:null,raf:0,cv:null,cx:null,w:0,h:0,dpr:1,ac:null,sv:0,st:null,down:0,dirty:1,t:0};
 function gxS(){S.gxs=S.gxs||{snd:0,vib:0,man:{},fl:[],night:0,pz:3,mc:0,md:0};return S.gxs}
 function gxStop(){cancelAnimationFrame(GX.raf);GX.raf=0;GX.g=null;GX.st=null;GX.cv=null;GX.down=0;if(GX.ac){try{GX.ac.close()}catch(e){}GX.ac=null}}
@@ -1790,6 +1790,7 @@ function gxAct(v){const o=gxS(),g=XS.gxg,q=v.split(':');
  if(q[0]==='p'){o.pz=+q[1];document.querySelectorAll('[data-v^="p:"]').forEach(b=>b.classList.toggle('on',b.dataset.v==='p:'+o.pz));gxInit();gxSave();return}
  if(q[0]==='x'){if(g==='man'){delete o.man[o.md+''];GX.dirty=1}else if(g==='gar'){o.fl=[];GX.st.fl=[]}else if(g==='zen'){GXD.zen.sand(GX.st);GX.dirty=1}else if(g==='puz'){GXD.puz.shuffle(GX.st)}gxSave()}}
 function gxDraw(hd,bk){const o=gxS(),g=XS.gxg;
+ if(g==='bwl'){const G=GXG.find(x=>x[0]===g);return hd(oL(G[2],G[3]),oL(G[4],G[5]))+bwHome()+`<div class="row" style="margin-top:12px"><button class="btn o" data-a="gxb">${oL('بازگشت','Back')}</button></div>`}
  if(g){const G=GXG.find(x=>x[0]===g);return hd(oL(G[2],G[3]),oL(G[4],G[5]))+`<div class="card" id="gxw" style="padding:8px"><canvas id="gxc" style="width:100%;display:block;border-radius:18px;touch-action:none;user-select:none;-webkit-user-select:none"></canvas></div>`+gxCtl()+`<div class="row" style="margin-top:12px"><button class="btn o" data-a="gxb">${oL('بازگشت','Back')}</button></div>`}
  return hd(oL('بازی‌ها','Games'),oL('بازی‌های آرام و یه بازی هیجان‌انگیز','Calm games plus one for fun'))
  +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px">${GXG.map(x=>{const cc=x[6].split(',');return`<div data-a="gxo" data-v="${x[0]}" style="cursor:pointer;border-radius:22px;padding:18px 10px 14px;text-align:center;background:linear-gradient(145deg,${cc[0]},${cc[1]});box-shadow:0 8px 20px ${cc[0]}66;color:#2a1a20;"><div style="font-size:44px;filter:drop-shadow(0 4px 6px #0002)">${x[1]}</div><b style="font-size:16px">${oL(x[2],x[3])}</b><div style="font-size:12px;opacity:.8;margin-top:4px;line-height:1.7">${oL(x[4],x[5])}</div></div>`}).join('')}</div>`
@@ -2405,7 +2406,9 @@ function bwRestart(){const s=GX.st;if(!s)return;const th=s.th,b=s.best;GX.st=GXD
 function bwSave(){const s=GX.st;if(!s)return;if(!s.rolls.length){toast(oL('هنوز پرتابی نداشتی','You have not thrown yet'));return}
  if(s.savedN===s.rolls.length){toast(oL('این امتیاز قبلاً ثبت شده','This score is already saved'));return}
  const o=gxS(),F=bwScore(s.rolls),tot=bwTotal(s.rolls);o.bsc=o.bsc||[];o.bsc.unshift({d:iso(today()),s:tot,t:s.th,f:F.filter(f=>f.c!==null).length,x:F.filter(f=>f.m[0]==='X').length,ok:s.over?1:0});o.bsc=o.bsc.slice(0,40);s.savedN=s.rolls.length;gxSave();save();toast(oL('امتیاز ثبت شد: ','Score saved: ')+fa(tot));bwListUp()}
-function bwListHtml(){const L=(gxS().bsc||[]).slice().sort((a,b)=>b.s-a.s).slice(0,6);if(!L.length)return`<div class="mu" style="line-height:2">${oL('هنوز امتیازی ثبت نشده. بعد از بازی «ثبت امتیاز» رو بزن.','No saved scores yet. Tap "Save score" after a game.')}</div>`;
+function bw3Open(){try{import('./b3d/game.js').then(m=>{m.open(document.body,{onClose:()=>{}})}).catch(()=>toast(oL('بارگذاری بازی ممکن نشد (اینترنت لازم است)','Could not load the game (internet needed)')))}catch(e){toast('3D?')}}
+function bwHome(){const o=gxS(),w=o.bwin||{w:0,l:0,d:0},th=BWT[o.bt||0];return`<div class="card" style="padding:0;overflow:hidden"><div style="height:170px;background:linear-gradient(160deg,${th.e1||'#6a4cff'},${th.e2||'#ff4f8b'});display:flex;align-items:center;justify-content:center;font-size:84px;filter:drop-shadow(0 6px 14px #0006)">🎳</div><div style="padding:14px"><button class="btn" style="width:100%;padding:14px;font-size:16px" data-a="b3d">${oL('شروع بازی','Play')}</button><div class="row" style="margin-top:12px;gap:8px;text-align:center"><div class="card" style="flex:1;margin:0;padding:10px"><div class="mu" style="font-size:11px">${oL('بهترین امتیاز','Best')}</div><b style="font-size:20px">${fa(o.bbest||0)}</b></div><div class="card" style="flex:1;margin:0;padding:10px"><div class="mu" style="font-size:11px">${oL('سکه','Coins')}</div><b style="font-size:20px">${fa(o.coin||0)}</b></div><div class="card" style="flex:1;margin:0;padding:10px"><div class="mu" style="font-size:11px">${oL('برد از کامپیوتر','CPU wins')}</div><b style="font-size:20px">${fa(w.w)}</b></div></div></div></div><div class="card" style="margin-top:12px"><h3>${oL('بهترین امتیازها','Best scores')}</h3><div id="bwls">${bwListHtml()}</div></div>`}
+function bwListHtml(){const L=(gxS().bsc||[]).slice().sort((a,b)=>b.s-a.s).slice(0,6);if(!L.length)return`<div class="mu" style="line-height:2">${oL('هنوز بازی نکردی. امتیازها خودکار ثبت می‌شن.','No saved scores yet. Tap "Save score" after a game.')}</div>`;
  return L.map((q,i)=>`<div class="row" style="justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bd)"><span><b style="color:var(--pk)">${fa(i+1)}</b> &nbsp;${esc(oL((BWT[q.t]||BWT[0]).n[0],(BWT[q.t]||BWT[0]).n[1]))}${q.ok?'':' · '+oL('نیمه‌تموم','unfinished')}</span><span class="mu">${fa(q.x)} ${oL('استرایک','strikes')} · ${jf(parse(q.d),{day:'numeric',month:'short'})}</span><b>${fa(q.s)}</b></div>`).join('')+`<div class="row" style="margin-top:8px"><button class="chip" data-a="bwc">${oL('پاک کردن لیست','Clear list')}</button></div>`}
 function bwListUp(){const e=document.getElementById('bwls');if(e)e.innerHTML=bwListHtml()}
 function bwFs(on){XS.bwfs=on;const w=document.getElementById('gxw'),cv=document.getElementById('gxc');if(!w||!cv)return;
@@ -2735,10 +2738,10 @@ document.addEventListener('click',e=>{
  else if(a==='ybm'){brStop();XS.bm=b.dataset.v;BRT.n=0}
  else if(a==='ybs'){if(BRT.on){brStop()}else{BRT.on=1;BRT.n=0;draw();brStep(0);return}}
  else if(a==='tlx'){TLALL=!TLALL}
- else if(a==='gxo'){XS.gxg=b.dataset.v;window.scrollTo(0,0)}
+ else if(a==='gxo'){XS.gxg=b.dataset.v;window.scrollTo(0,0);if(XS.gxg==='bwl')setTimeout(bw3Open,250)}
  else if(a==='bwr'){bwRestart();return}
  else if(a==='bwf'){bwFs(!XS.bwfs);return}
- else if(a==='b3d'){try{import('./b3d/game.js').then(m=>{if(!m.open(document.body,{onClose:()=>{}}))return}).catch(()=>toast(oL('بارگذاری بازی سه‌بعدی ممکن نشد (اینترنت لازم است)','Could not load 3D game (needs internet)')))}catch(e){toast('3D?')}return}
+ else if(a==='b3d'){bw3Open();return}
  else if(a==='bws'){bwSave();return}
  else if(a==='bwc'){gxS().bsc=[];gxSave();bwListUp();return}
  else if(a==='gxb'){bwFsOff();XS.gxg=null;gxStop();window.scrollTo(0,0)}
