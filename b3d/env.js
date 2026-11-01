@@ -114,7 +114,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
  // back wall behind approach
  scene.add(box(20,5.2,.3,backM,0,2.4,6.4,false,true));
  // ball return machine
- const br=new THREE.Group(),brM=new THREE.MeshPhysicalMaterial({color:0x252a48,roughness:.3,metalness:.5,clearcoat:.5,envMapIntensity:1});br.add(box(.5,.62,.9,brM,0,.31,0,true,true));const hood=new THREE.Mesh(new THREE.SphereGeometry(.34,24,12,0,Math.PI*2,0,Math.PI/2),brM);hood.scale.set(1,.8,1.4);hood.position.set(0,.62,0);hood.castShadow=true;br.add(hood);
+ const br=new THREE.Group(),brM=new THREE.MeshPhysicalMaterial({color:0x6c7396,roughness:.22,metalness:.75,clearcoat:.8,envMapIntensity:1.4});br.add(box(.5,.62,.9,brM,0,.31,0,true,true));const hood=new THREE.Mesh(new THREE.SphereGeometry(.34,24,12,0,Math.PI*2,0,Math.PI/2),brM);hood.scale.set(1,.5,1.4);hood.position.set(0,.62,0);hood.castShadow=true;br.add(hood);
  const brLed=box(.02,.02,.9,ledM,.26,.5,0,false,false);br.add(brLed);br.add(box(.012,.012,.9,ledM2,-.26,.5,0,false,false));br.position.set(HW+.156+.5+.35,0,2.2);br.scale.setScalar(.72);scene.add(br);E.br=br;E.brPos=new THREE.Vector3(br.position.x,.72,br.position.z);
  // sweeper bar
  const bar=new THREE.Mesh(new THREE.BoxGeometry(1.35,.06,.07),new THREE.MeshStandardMaterial({color:0x9097a8,metalness:.9,roughness:.25}));bar.position.set(0,1.6,-16.2);bar.castShadow=true;scene.add(bar);E.bar=bar;

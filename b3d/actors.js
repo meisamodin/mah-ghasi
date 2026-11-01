@@ -27,11 +27,11 @@ export function poseCap(mesh,p,t){
 function skinMat(c){return new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:0})}
 function numTex(n,sh){const c=cv(256,256),x=c.getContext('2d');x.clearRect(0,0,256,256);x.fillStyle='rgba(255,255,255,.95)';x.font='900 170px Tahoma,Arial,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(String(n),128,140);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
 export function makeBowler(o){o=Object.assign({shirt:0xc03a2b,shirt2:0x8e2a20,skin:0xd9a07a,hair:0x2b1b12,pants:0x2c3868,shoe:0x2b2b36,num:7},o||{});
- const root=new THREE.Group(),J={},sh=new THREE.MeshPhysicalMaterial({color:o.shirt,roughness:.6,clearcoat:.1}),sh2=new THREE.MeshStandardMaterial({color:o.shirt2,roughness:.6}),sk=skinMat(o.skin),pn=new THREE.MeshStandardMaterial({color:o.pants,roughness:.7}),shoeM=new THREE.MeshPhysicalMaterial({color:o.shoe,roughness:.35,clearcoat:.6}),sole=new THREE.MeshStandardMaterial({color:0xf2f2f2,roughness:.6}),hairM=new THREE.MeshStandardMaterial({color:o.hair,roughness:.8});
+ const root=new THREE.Group(),J={},sh=new THREE.MeshPhysicalMaterial({color:o.shirt,roughness:.55,clearcoat:.15,sheen:.3,sheenRoughness:.6,sheenColor:new THREE.Color(o.shirt)}),sh2=new THREE.MeshStandardMaterial({color:o.shirt2,roughness:.6}),sk=skinMat(o.skin),pn=new THREE.MeshStandardMaterial({color:o.pants,roughness:.7}),shoeM=new THREE.MeshPhysicalMaterial({color:o.shoe,roughness:.35,clearcoat:.6}),sole=new THREE.MeshStandardMaterial({color:0xf2f2f2,roughness:.6}),hairM=new THREE.MeshStandardMaterial({color:o.hair,roughness:.8});
  const add=(p,m,mat,cast)=>{const k=new THREE.Mesh(m,mat);k.castShadow=cast!==false;p.add(k);return k};
  const hips=new THREE.Group();hips.position.y=.95;root.add(hips);J.hips=hips;
  // legs
- const leg=(sd)=>{const th=new THREE.Group();th.position.set(sd*.1,0,0);hips.add(th);const t=add(th,new THREE.CapsuleGeometry(.062,.34,6,14),pn);t.position.y=-.24;const kn=new THREE.Group();kn.position.y=-.47;th.add(kn);const c=add(kn,new THREE.CapsuleGeometry(.05,.34,6,14),pn);c.position.y=-.22;const ft=new THREE.Group();ft.position.y=-.45;kn.add(ft);const sh0=add(ft,new THREE.BoxGeometry(.11,.07,.27),shoeM);sh0.position.set(0,-.02,-.05);const sl=add(ft,new THREE.BoxGeometry(.115,.022,.285),sole);sl.position.set(0,-.065,-.05);return{th,kn,ft}};
+ const leg=(sd)=>{const th=new THREE.Group();th.position.set(sd*.1,0,0);hips.add(th);const t=add(th,new THREE.CapsuleGeometry(.078,.34,8,18),pn);t.position.y=-.24;const kn=new THREE.Group();kn.position.y=-.47;th.add(kn);const c=add(kn,new THREE.CapsuleGeometry(.062,.34,8,18),pn);c.position.y=-.22;const ft=new THREE.Group();ft.position.y=-.45;kn.add(ft);const sh0=add(ft,new THREE.CapsuleGeometry(.056,.17,8,16),shoeM);sh0.rotation.x=Math.PI/2;sh0.scale.set(1.05,1,.85);sh0.position.set(0,-.012,-.06);const sl=add(ft,new THREE.CapsuleGeometry(.059,.18,6,14),sole);sl.rotation.x=Math.PI/2;sl.scale.set(1.05,1,.3);sl.position.set(0,-.06,-.06);return{th,kn,ft}};
  J.L=leg(-1);J.R=leg(1);
  // torso
  const spine=new THREE.Group();hips.add(spine);J.spine=spine;
@@ -44,10 +44,10 @@ export function makeBowler(o){o=Object.assign({shirt:0xc03a2b,shirt2:0x8e2a20,sk
  const head=new THREE.Group();head.position.y=.76;spine.add(head);J.head=head;
  const sk0=add(head,new THREE.SphereGeometry(.105,28,22),sk);sk0.scale.set(.95,1.08,1);
  const hair=add(head,new THREE.SphereGeometry(.112,28,22,0,Math.PI*2,0,Math.PI*.62),hairM);hair.position.y=.012;hair.rotation.x=-.25;
- const nose=add(head,new THREE.SphereGeometry(.02,10,8),sk);nose.position.set(0,-.01,-.105);
+ head.scale.setScalar(1.12);const eyeM=new THREE.MeshStandardMaterial({color:0x14100e,roughness:.4});[-1,1].forEach(sd=>{const ey=add(head,new THREE.SphereGeometry(.012,10,8),eyeM);ey.position.set(sd*.04,.018,-.098);const br=add(head,new THREE.CapsuleGeometry(.004,.03,4,6),hairM);br.rotation.z=Math.PI/2;br.position.set(sd*.04,.05,-.097)});const nose=add(head,new THREE.SphereGeometry(.02,10,8),sk);nose.position.set(0,-.01,-.105);
  [-1,1].forEach(sd=>{const e=add(head,new THREE.SphereGeometry(.024,10,8),sk);e.position.set(sd*.105,-.01,0)});
  // arms
- const arm=(sd)=>{const sho=new THREE.Group();sho.position.set(sd*.235,.56,0);spine.add(sho);const sl=add(sho,new THREE.CapsuleGeometry(.05,.2,6,12),sh);sl.position.y=-.14;const el=new THREE.Group();el.position.y=-.3;sho.add(el);const fa=add(el,new THREE.CapsuleGeometry(.034,.22,6,12),sk);fa.position.y=-.16;const hand=new THREE.Group();hand.position.y=-.34;el.add(hand);add(hand,new THREE.SphereGeometry(.04,12,10),sk);return{sho,el,hand}};
+ const arm=(sd)=>{const sho=new THREE.Group();sho.position.set(sd*.235,.56,0);spine.add(sho);const sl=add(sho,new THREE.CapsuleGeometry(.056,.2,8,14),sh);sl.position.y=-.14;const cuff=add(sho,new THREE.TorusGeometry(.054,.013,8,16),sh2);cuff.rotation.x=Math.PI/2;cuff.position.y=-.255;const el=new THREE.Group();el.position.y=-.3;sho.add(el);const fa=add(el,new THREE.CapsuleGeometry(.036,.22,8,14),sk);fa.position.y=-.16;const hand=new THREE.Group();hand.position.y=-.34;el.add(hand);add(hand,new THREE.SphereGeometry(.04,12,10),sk);return{sho,el,hand}};
  J.AL=arm(-1);J.AR=arm(1);
  root.userData.J=J;root.userData.ph=0;return root}
 export function setPose(b,P){const J=b.userData.J;const r=(o,x,y,z)=>{o.rotation.set(x||0,y||0,z||0)};
