@@ -3,9 +3,9 @@ import {EffectComposer} from './postprocessing/EffectComposer.js';
 import {RenderPass} from './postprocessing/RenderPass.js';
 import {UnrealBloomPass} from './postprocessing/UnrealBloomPass.js';
 import {OutputPass} from './postprocessing/OutputPass.js';
-import {buildEnv,TH} from './env.js?v=86';
-import * as A from './actors.js?v=86';
-import * as P from './phys3.js?v=86';
+import {buildEnv,TH} from './env.js?v=87';
+import * as A from './actors.js?v=87';
+import * as P from './phys3.js?v=87';
 const _C={},W_=new Proxy({},{get(_,k){if(k in _C)return _C[k];let v;try{v=(0,eval)(String(k))}catch(e){v=undefined}if(v!==undefined)_C[k]=v;return v}}),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,rnd=(a,b)=>a+Math.random()*(b-a);
 const oL=(f,e)=>W_.oL?W_.oL(f,e):f,fa=n=>W_.fa?W_.fa(n):String(n);
 let CUR=null;
@@ -32,7 +32,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=QL>=2?.9:1.12;renderer.outputColorSpace=THREE.SRGBColorSpace;
  let scene,E,pins,ball,bowlers=[],cam,composer,bloom,artCv,artCx,artT=0,artS,pcount=0;
  const dprOf=q=>q>=2?2.5:q>=1?1.75:1.25;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
- function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?58:44;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
+ function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?46:40;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
  // ------------ scene ------------
  function build(){if(scene){scene.traverse(x=>{if(x.geometry)x.geometry.dispose&&x.geometry.dispose()})}scene=new THREE.Scene();const ti=o0().bt||0;artCv=document.createElement('canvas');artCv.width=1024;artCv.height=384;artCx=artCv.getContext('2d');artS={stars:Array.from({length:46},()=>[Math.random(),Math.random(),rnd(.8,2),rnd(1,3)]),f:0,k:0};
   E=buildEnv(scene,renderer,ti,QL,artCv);pins=A.makePins(scene,E);
@@ -98,7 +98,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  function setCam(px,py,pz,lx,ly,lz,k,fovm){CT.p.set(px,py,pz);CT.l.set(lx,ly,lz);CT.k=k||4;CT.fm=fovm||1}
  function directCam(dt){const bx=G.bx,B=G.S&&G.S.ball&&!G.S.ball.gone?G.S.ball:null,o=o0();
   if(G.st==='walk'){const k=G.t/G.walkDur;setCam(lerp(1.8,.5,k),2.1,6.0,lerp(.9,0,k),.55,lerp(.5,-5,k),2.5)}
-  else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.75,.8,1.95,bx*.8,.16,-9,6)}
+  else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.75,.86,2.45,bx*.8,.14,-9,6)}
   else if(G.st==='throw'){setCam(bx*.5+.5,1.85,5.5,bx*.8,.3,-6,5)}
   else if(G.st==='roll'){const m=G.cm;if(!B){setCam(0,1.2,-12,0,.2,-19,2);return}
    const cz=B.z;if(m===1||cz>-9.5){if(cz<-12.6)setCam(cl(B.x*.3,-.3,.3),.42,-15.1,0,.2,-18.6,4);else setCam(B.x*.6,.5,cz+1.7,B.x*.5,.14,cz-7,8)}
