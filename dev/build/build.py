@@ -66,7 +66,7 @@ print('tester patched')
 
 # ---- v100
 s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
-r1("/* ===== mod16 v2: bowling",open('/home/claude/content/v100.js',encoding='utf8').read()+open('/home/claude/content/v100b.js',encoding='utf8').read()+"\n/* ===== mod16 v2: bowling")
+r1("/* ===== mod16 v2: bowling",open('/home/claude/content/v100.js',encoding='utf8').read()+open('/home/claude/content/v100b.js',encoding='utf8').read()+open('/home/claude/content/v100c.js',encoding='utf8').read()+open('/home/claude/content/v100d.js',encoding='utf8').read()+"\n/* ===== mod16 v2: bowling")
 r1("save=()=>{try{localStorage.setItem('mahbanoo'","save=()=>{if(window.DEC)return;try{localStorage.setItem('mahbanoo'")
 r1("if(hp(e.target.value)===S.pin){UL=true;draw()}else{e.target.value='';$('#le').textContent='رمز اشتباهه'}","lkTry(e.target)")
 r1("+goalsCard()+motCard()+calCard()}return home0()","+goalsCard()+artDayCard()+motCard()+calCard()}return home0()")
@@ -95,5 +95,18 @@ r1("else if(a==='tourgo'){S.tour=0}","else if(a==='tourgo'){S.tour=0}\n else if(
 open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
 print('v100b patched')
 s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
-r1('</head>','<style>ul.spl{margin:6px 0 10px;padding-inline-start:20px;line-height:1.9;font-size:14px}ul.spl li{margin-bottom:4px}details summary{outline:none}</style></head>')
+r1('</head>','<style>ul.spl,ol.spl{margin:6px 0 10px;padding-inline-start:22px;line-height:1.9;font-size:14px}.spl li{margin-bottom:4px}details summary{outline:none}</style></head>')
 open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
+
+s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
+r1("if(S.ob===false){obDraw();abAfterOb();return}","if(S.ob===false){if(!(S.obd&&S.obd.role)){roleDraw();return}if(S.obd.role==='m'){pobDraw();return}obDraw();abAfterOb();return}")
+r1("tl:toolsTab,not:()=>","tl:toolsTab,care:spCare,learn:spLearn,not:()=>") if "tl:toolsTab,not:()=>" in s else r1("tl:toolsTab,","tl:toolsTab,care:spCare,")
+r1("if(S.sm&&(tab==='hl'||tab==='pms'||tab==='tl'))tab='home';","if(S.sm&&(tab==='hl'||tab==='pms'||tab==='tl'))tab='home';if(!S.sp&&(tab==='care'||tab==='learn'))tab='home';")
+r1("<div><b>ماه قاسی</b>${S.prof.name?","<div><b>${S.sp?'ماه قاسی':'ماه قاسی'}</b>${S.prof.name?")
+r1("function draw(){try{","function draw(){try{document.documentElement.dataset.sp=S.sp?'1':'';")
+r1("['home','not','set'].includes(t[0])).concat([['tl','🧰','ابزار']]).sort((a,b)=>['home','tl','not','set']","['home','not','set'].includes(t[0])).concat([['tl','🧰','ابزار'],['care','💝','مراقبت']]).sort((a,b)=>['home','care','tl','not','set']")
+r1("['home','tl','not','set'].indexOf(b[0])","['home','care','tl','not','set'].indexOf(b[0])") if "['home','tl','not','set'].indexOf(b[0])" in s else None
+r1("else if(a==='tourgo'){S.tour=0}","else if(a==='tourgo'){S.tour=0}\n else if(a==='orole'){S.obd={role:b.dataset.v};OB=0;window.scrollTo(0,0)}\n else if(a==='pobn'){pobRead();const D=S.obd||{};if(OB===1&&!D.start){toast('یه تاریخ انتخاب کن (حدودی هم باشه)');return}if(OB===2)pobDone();else{OB++;window.scrollTo(0,0)}}\n else if(a==='pobb'){pobRead();if(OB===0){delete S.obd.role}else OB--;window.scrollTo(0,0)}\n else if(a==='pobq'){pobRead();(S.obd=S.obd||{}).start=iso(add(today(),-(+b.dataset.v)))}\n else if(a==='pobm'){pobRead();(S.obd=S.obd||{}).st=b.dataset.v}\n else if(a==='spst'){spSetStat(b.dataset.v)}\n else if(a==='spk'){const K=S.spk=S.spk||{},i=b.dataset.v;K[i]=K[i]?0:1}\n else if(a==='spwk'){const w=spWk(),i=+b.dataset.v,k=w.d.indexOf(i);if(k<0)w.d.push(i);else w.d.splice(k,1)}\n else if(a==='sptc'){const T=S.sptc=S.sptc||{},k=b.dataset.v;T[k]=T[k]?0:1}\n else if(a==='spda'){const n=(($('#sdn')||{}).value||'').trim(),d=($('#sdd')||{}).value;if(!n||!d){toast('اسم و تاریخ رو بنویس');return}(S.spd=S.spd||[]).push({n,d})}\n else if(a==='spdd'){(S.spd||[]).splice(+b.dataset.v,1)}")
+r1('</head>','<style>html[data-sp="1"]{--pk:#0284c7;--pk2:#06b6d4}html[data-sp="1"]:not([data-theme="dark"]){--bg:#f0f9ff;--bd:#dbeafe;--soft:#eff6ff}</style></head>')
+open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
+print('v100c patched')
