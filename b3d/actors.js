@@ -1,5 +1,5 @@
 import * as THREE from './three.module.min.js';
-import {pinGeometry} from './env.js?v=88';
+import {pinGeometry} from './env.js?v=89';
 const cv=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
 // ---------- ball ----------
 export function ballTexture(cols,pat,seed){const c=cv(1024,512),x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,512);g.addColorStop(0,cols[2]);g.addColorStop(.35,cols[0]);g.addColorStop(1,cols[1]);x.fillStyle=g;x.fillRect(0,0,1024,512);

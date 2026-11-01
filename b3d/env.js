@@ -11,6 +11,7 @@ export const TH=[
  {n:'Jungle',wood:'#e0aa66',wood2:'#8a5a28',acc:0x7ee787,acc2:0xffd166,floor:0x06180d,wall:0x0f4a22,ceil:0x03100a,fog:0x06200f,key:0xfff6d0,amb:0x3a7a48},
  {n:'Candy',wood:'#ffe6f2',wood2:'#f6a6d0',acc:0xff6bb5,acc2:0x7ee8d0,floor:0x4a1233,wall:0x8a2a62,ceil:0x260a1c,fog:0x4a1233,key:0xfff0f8,amb:0x9a4a78},
  {n:'Spooky',wood:'#8e6aa2',wood2:'#3a2050',acc:0xff9a3c,acc2:0xa78bfa,floor:0x0a0512,wall:0x1c0c2c,ceil:0x05020a,fog:0x0a0512,key:0xffd6a8,amb:0x4a2a60}];
+const fcol0=th=>new THREE.Color(th.floor).lerp(new THREE.Color(th.wall),.6);
 export const col=h=>new THREE.Color(h);
 function cvs(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
 export function laneTexture(th,aniso){const W=1024,H=8192,c=cvs(W,H),x=c.getContext('2d');
@@ -19,7 +20,7 @@ export function laneTexture(th,aniso){const W=1024,H=8192,c=cvs(W,H),x=c.getCont
  // canvas top = far? we map so that v=1 is +z (near). handled by flipY default: top row = v 1.
  const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,th.wood2);g.addColorStop(.5,th.wood);g.addColorStop(1,th.wood2);x.fillStyle=g;x.fillRect(0,0,W,H);
  const nb=39,bw=W/nb;
- for(let i=0;i<nb;i++){const v=(Math.sin(i*12.9898)*43758.5453)%1,sh=.06*Math.abs(v);x.fillStyle=(i%2?'rgba(0,0,0,':'rgba(255,255,255,')+(sh+.02)+')';x.fillRect(i*bw,0,bw,H);
+ for(let i=0;i<nb;i++){const v=(Math.sin(i*12.9898)*43758.5453)%1,sh=.1*Math.abs(v);x.fillStyle=(i%2?'rgba(0,0,0,':'rgba(255,255,255,')+(sh+.02)+')';x.fillRect(i*bw,0,bw,H);
   // grain
   x.strokeStyle='rgba(60,30,10,.09)';x.lineWidth=1;for(let k=0;k<26;k++){const gx=i*bw+Math.random()*bw,gy=Math.random()*H;x.beginPath();x.moveTo(gx,gy);x.bezierCurveTo(gx+3,gy+60,gx-3,gy+160,gx+2,gy+300+Math.random()*500);x.stroke()}
   // board end seams (staggered)
@@ -28,13 +29,13 @@ export function laneTexture(th,aniso){const W=1024,H=8192,c=cvs(W,H),x=c.getCont
  // approach darker tint (z>0)
  x.fillStyle='rgba(30,12,0,.12)';x.fillRect(0,0,W,zpx(0));
  // approach dots
- x.fillStyle='rgba(20,8,0,.55)';[1.2,2.1,3.0].forEach(z=>[-.4,-.28,-.16,0,.16,.28,.4].forEach(u=>{x.beginPath();x.arc(W/2+u/1.053*W,zpx(z),5,0,6.283);x.fill()}));
+ x.fillStyle='rgba(20,8,0,.55)';[1.2,2.1,3.0].forEach(z=>[-.4,-.28,-.16,0,.16,.28,.4].forEach(u=>{x.beginPath();x.arc(W/2+u/1.053*W,zpx(z),7,0,6.283);x.fill()}));
  // foul line
  x.fillStyle='#d9132a';x.fillRect(0,zpx(0)-8,W,16);x.fillStyle='rgba(255,200,200,.5)';x.fillRect(0,zpx(0)-8,W,3);
  // range dots at 2.1-2.4m
  x.fillStyle='rgba(20,8,0,.6)';[-.35,-.25,-.15,-.05,.05,.15,.25,.35].forEach((u,i)=>{x.beginPath();x.arc(W/2+u/1.053*W*1.0,zpx(-2.1+Math.abs(u)*0),4.5,0,6.283);x.fill()});
  // arrows at 4.57m (7 arrows, V shaped)
- x.fillStyle='rgba(30,12,0,.7)';[-.3,-.2,-.1,0,.1,.2,.3].forEach((u,i)=>{const zz=-4.45-(3-Math.abs(i-3))*.28,px=W/2+u/1.053*W*1.6*1.0,ww=18,hh=.34*pm;x.beginPath();x.moveTo(px,zpx(zz));x.lineTo(px-ww,zpx(zz)+hh);x.lineTo(px+ww,zpx(zz)+hh);x.closePath();x.fill()});
+ x.fillStyle='rgba(40,16,0,.85)';[-.3,-.2,-.1,0,.1,.2,.3].forEach((u,i)=>{const zz=-4.45-(3-Math.abs(i-3))*.28,px=W/2+u/1.053*W*1.6*1.0,ww=24,hh=.45*pm;x.beginPath();x.moveTo(px,zpx(zz));x.lineTo(px-ww,zpx(zz)+hh);x.lineTo(px+ww,zpx(zz)+hh);x.closePath();x.fill()});
  // pin deck: pin spots and slight yellowing
  x.fillStyle='rgba(60,25,0,.1)';x.fillRect(0,zpx(PZ0+1.1),W,zpx(PIT)-zpx(PZ0+1.1));
  x.strokeStyle='rgba(30,12,0,.5)';x.lineWidth=3;for(let r=0;r<4;r++)for(let k=0;k<=r;k++){const px=W/2+((k-r/2)*.305)/1.053*W,py=zpx(PZ0-r*.264);x.beginPath();x.arc(px,py,9,0,6.283);x.stroke()}
@@ -50,28 +51,28 @@ export function pinGeometry(){const pts=[[0,0],[.0286,0],[.0300,.008],[.0390,.03
  g.setAttribute('color',new THREE.BufferAttribute(colA,3));return g}
 function box(w,h,d,m,x,y,z,cast,rec){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);b.castShadow=!!cast;b.receiveShadow=rec!==false;return b}
 export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E={th,lights:[],glow:glowTexture(),dyn:[]};
- scene.background=col(th.fog);scene.fog=new THREE.Fog(th.fog,10,46);
+ scene.background=col(th.fog);scene.fog=new THREE.Fog(col(th.fog).lerp(col(th.wall),.5),14,60);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
  // lights
- const hemi=new THREE.HemisphereLight(th.key,th.floor,.55);scene.add(hemi);
+ const hemi=new THREE.HemisphereLight(th.key,fcol0(th),.75);scene.add(hemi);
  const key=new THREE.SpotLight(th.key,120,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=2?2048:q>=1?1024:512;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
  const deck=new THREE.SpotLight(0xffffff,28,14,.5,.7,1.5);deck.position.set(0,3.6,-16.2);deck.target.position.set(0,0,-18.3);scene.add(deck,deck.target);E.deck=deck;
  const app=new THREE.SpotLight(th.key,60,10,.9,.8,1.6);app.position.set(0,3.8,2.6);app.target.position.set(0,0,.5);scene.add(app,app.target);E.app=app;
  const fillL=new THREE.PointLight(th.acc,14,20,1.6);fillL.position.set(-3,1.3,-8);scene.add(fillL);const fillR=new THREE.PointLight(th.acc2,14,20,1.6);fillR.position.set(3,1.3,-8);scene.add(fillR);E.fillL=fillL;E.fillR=fillR;
  // floor
- const floorM=new THREE.MeshPhysicalMaterial({color:th.floor,roughness:.28,metalness:.1,clearcoat:.6,clearcoatRoughness:.2,envMapIntensity:.7});
+ const fcol=col(th.floor).lerp(col(th.wall),.55).lerp(col(th.wood2),.18);const floorM=new THREE.MeshPhysicalMaterial({color:fcol,roughness:.3,metalness:.1,clearcoat:.6,clearcoatRoughness:.2,envMapIntensity:.7});
  const fl=new THREE.Mesh(new THREE.PlaneGeometry(60,60),floorM);fl.rotation.x=-Math.PI/2;fl.position.set(0,-.012,-8);fl.receiveShadow=true;scene.add(fl);
  // lane
  const laneTex=laneTexture(th,renderer.capabilities.getMaxAnisotropy());E.laneTex=laneTex;
  const laneM=new THREE.MeshPhysicalMaterial({map:laneTex,roughness:.2,metalness:0,clearcoat:1,clearcoatRoughness:.05,envMapIntensity:1.5});E.laneM=laneM;
  const LL=23.45,lane=new THREE.Mesh(new THREE.PlaneGeometry(1.053,LL,1,1),laneM);lane.rotation.x=-Math.PI/2;lane.position.set(0,0,4-LL/2);lane.receiveShadow=true;scene.add(lane);E.lane=lane;
- const gutM=new THREE.MeshStandardMaterial({color:0x0b0b10,roughness:.45,metalness:.5,side:THREE.DoubleSide,envMapIntensity:.6});
- const capM=new THREE.MeshPhysicalMaterial({color:th.floor,roughness:.18,metalness:.2,clearcoat:.8,envMapIntensity:1});
+ const gutM=new THREE.MeshStandardMaterial({color:0x2a2c3a,roughness:.4,metalness:.4,side:THREE.DoubleSide,envMapIntensity:.6});
+ const capM=new THREE.MeshPhysicalMaterial({color:col(th.wood2).lerp(col(th.wall),.35),roughness:.18,metalness:.2,clearcoat:.8,envMapIntensity:1});
  const ledM=new THREE.MeshBasicMaterial({color:th.acc});const ledM2=new THREE.MeshBasicMaterial({color:th.acc2});E.led=[ledM,ledM2];
  function laneSet(cx,full){const G=new THREE.Group();G.position.x=cx;
   [-1,1].forEach(sd=>{const gm=new THREE.Mesh(new THREE.CylinderGeometry(.078,.078,LL,24,1,true,sd>0?0:Math.PI,Math.PI),gutM);gm.rotation.x=Math.PI/2;gm.rotation.z=0;gm.position.set(sd*(HW+.078),0,4-LL/2);gm.scale.y=1;gm.rotation.set(Math.PI/2,0,0);G.add(gm);
    const cap=box(.5,.06,LL,capM,sd*(HW+.156+.25),-.03,4-LL/2,false,true);G.add(cap);const led=box(.012,.012,LL,sd>0?ledM:ledM2,sd*(HW+.158),.003,4-LL/2,false,false);G.add(led);
-   const wall=box(.04,.5,LL,capM,sd*(HW+.156+.5),.25,4-LL/2,true,true);G.add(wall)});
+   const wall=box(.05,.1,LL,capM,sd*(HW+.156+.5),.05,4-LL/2,true,true);G.add(wall)});
   return G}
  const main=laneSet(0,true);scene.add(main);
  // neighbor lanes (instanced pins + plane copies)
@@ -84,7 +85,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
   });
  // pit + masking unit
  const pit=box(4.8,.7,2,new THREE.MeshStandardMaterial({color:0x050507,roughness:.9}),0,-.3,PIT-1,false,true);scene.add(pit);
- const backM=new THREE.MeshStandardMaterial({color:th.wall,roughness:.55,metalness:.2,envMapIntensity:.6});
+ const backM=new THREE.MeshStandardMaterial({color:col(th.wall).lerp(col(th.wood2),.2),roughness:.55,metalness:.2,envMapIntensity:.6});
  const mask=box(18,5.2,.4,backM,0,2.4,PIT-2.1,false,true);scene.add(mask);
  const artTex=new THREE.CanvasTexture(artCanvas);artTex.colorSpace=THREE.SRGBColorSpace;artTex.anisotropy=4;E.artTex=artTex;
  const sm=new THREE.MeshBasicMaterial({map:artTex,toneMapped:false});
