@@ -9,7 +9,7 @@ Single-file Persian RTL PWA (period / pregnancy / baby tracker). Everything is i
 - `privacy.html` — public privacy policy (needed for stores).
 - `dev/tests/` — Playwright scripts used for regression checks (they load `/mnt/user-data/outputs/mahbanoo.html` via a routed fake host `http://t.local/`; change the path if you run them elsewhere).
 
-## Release (current: v94)
+## Release (current: v95)
 1. Edit `index.html`.
 2. Bump `const APPV='vN'` in index.html and `mah-ghasi-vN` in sw.js.
 3. Run `node dev/tests/t17.js` (boot/page-error check) plus the feature tests.
@@ -32,3 +32,10 @@ Single-file Persian RTL PWA (period / pregnancy / baby tracker). Everything is i
 
 ## Ideas not built (owner decided to skip or wait)
 AI chat (needs a backend + key; sanctions/privacy issues), news feed, in-app Google search (Wikipedia search or Google CSE were proposed), radio tool (no verified streams).
+
+## v95 build pipeline (articles, cooking, toolbox)
+- `dev/build/build.py` takes `dev/build/base_v94.html` (the v94 app) + `dev/build/content/*.js|css` and writes the full app (idempotent; edit paths at the top if run from the repo). index.html is the build output; for later small edits you can edit index.html directly.
+- Articles: `art_a..d.js` (new), `art_ext.js` (deeper text for the original 33), `art_ui.js` (categories, search, bookmarks `S.abk`, markup `## - > !!`).
+- Cooking: `cook_a/b/c.js` (RCP.push, 92 recipes, 11th field = kind), `cook_ui.js` (lessons, tips, kind chips, search, favorites `S.dgp.fav`, random pick).
+- Toolbox: `tools_a/b/c.js` register tools via `tlx(id,icon,fa,en,helpFa,helpEn,{h,init,a,i})` into `TLX` (xvDraw hook), actions via `data-a="tx" data-v="tool|act|arg"` (return false = no redraw), inputs via `data-tx="tool|act"`. Includes own QR encoder (versions 1-10, ECC M), fal Hafez, dream dictionary, level, sound meter, magnifier, etc.
+- Untested on real hardware: camera, microphone, orientation sensor, GPS, BarcodeDetector, vibration (tested only with fake devices).
