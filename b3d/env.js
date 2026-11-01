@@ -7,9 +7,9 @@ export const TH=[
  {n:'Neon',wood:'#8b7bff',wood2:'#4a2fb0',acc:0x22e8ff,acc2:0xff3fd0,floor:0x0a0620,wall:0x120a36,ceil:0x06030f,fog:0x0a0522,key:0xcfd8ff,amb:0x3a2a90},
  {n:'Cosmic',wood:'#5f93d6',wood2:'#1c3f78',acc:0x67e8f9,acc2:0xa78bfa,floor:0x040b1a,wall:0x0a1c3c,ceil:0x03060f,fog:0x040d20,key:0xdff3ff,amb:0x28508a},
  {n:'Sunset',wood:'#ffb98a',wood2:'#c4506e',acc:0xff6b9d,acc2:0xffd166,floor:0x2a0e22,wall:0x4a1736,ceil:0x140512,fog:0x2a0e22,key:0xffe3d0,amb:0x7a3450},
- {n:'Arctic',wood:'#dff2ff',wood2:'#8cbbe0',acc:0x9be7ff,acc2:0xc4b5fd,floor:0x0a2036,wall:0x12466e,ceil:0x04101e,fog:0x0b2a46,key:0xf0fbff,amb:0x5a8ab8},
+ {n:'Arctic',dim:.82,wood:'#dff2ff',wood2:'#8cbbe0',acc:0x9be7ff,acc2:0xc4b5fd,floor:0x0a2036,wall:0x12466e,ceil:0x04101e,fog:0x0b2a46,key:0xf0fbff,amb:0x5a8ab8},
  {n:'Jungle',wood:'#e0aa66',wood2:'#8a5a28',acc:0x7ee787,acc2:0xffd166,floor:0x06180d,wall:0x0f4a22,ceil:0x03100a,fog:0x06200f,key:0xfff6d0,amb:0x3a7a48},
- {n:'Candy',wood:'#ffe6f2',wood2:'#f6a6d0',acc:0xff6bb5,acc2:0x7ee8d0,floor:0x4a1233,wall:0x8a2a62,ceil:0x260a1c,fog:0x4a1233,key:0xfff0f8,amb:0x9a4a78},
+ {n:'Candy',dim:.74,wood:'#ffd3e8',wood2:'#e486b8',acc:0xff6bb5,acc2:0x7ee8d0,floor:0x4a1233,wall:0x8a2a62,ceil:0x260a1c,fog:0x4a1233,key:0xfff0f8,amb:0x9a4a78},
  {n:'Spooky',wood:'#8e6aa2',wood2:'#3a2050',acc:0xff9a3c,acc2:0xa78bfa,floor:0x0a0512,wall:0x1c0c2c,ceil:0x05020a,fog:0x0a0512,key:0xffd6a8,amb:0x4a2a60}];
 const fcol0=th=>new THREE.Color(th.floor).lerp(new THREE.Color(th.wall),.6);
 export const col=h=>new THREE.Color(h);
@@ -57,14 +57,14 @@ function signText(txt,color,w,h,layers,depth){
  const gc=cvs(cw,ch),gx=gc.getContext('2d');gx.fillStyle='#fff';gx.textAlign='center';gx.textBaseline='middle';gx.font=x.font;gx.shadowColor='#fff';gx.shadowBlur=ch*.16;gx.fillText(txt,cw/2,ch/2);gx.fillText(txt,cw/2,ch/2);
  const gtex=new THREE.CanvasTexture(gc);gtex.colorSpace=THREE.SRGBColorSpace;
  const grp=new THREE.Group(),geo=new THREE.PlaneGeometry(w,h),base=new THREE.Color(color);
- const gl=new THREE.Mesh(new THREE.PlaneGeometry(w*1.12,h*1.12),new THREE.MeshBasicMaterial({map:gtex,color:base,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false,fog:false}));gl.position.z=-.01;grp.add(gl);
+ const gl=new THREE.Mesh(new THREE.PlaneGeometry(w*1.12,h*1.12),new THREE.MeshBasicMaterial({map:gtex,color:base,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false,fog:false}));gl.position.z=-.01;grp.add(gl);const bk=new THREE.Mesh(new THREE.PlaneGeometry(w*1.06,h*1.04),new THREE.MeshBasicMaterial({color:0x100818,transparent:true,opacity:.62,depthWrite:false,fog:false}));bk.position.z=-.03;grp.add(bk);
  for(let i=0;i<layers;i++){const t=i/(layers-1),front=i===layers-1;
   const c2=front?base.clone().lerp(new THREE.Color(0xffffff),.62):base.clone().multiplyScalar(.12+.4*t*t);
   const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex,color:c2,alphaTest:.5,toneMapped:false,fog:false}));m.position.z=t*depth;grp.add(m)}
  return grp}
 export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||TH[0],E={th,lights:[],glow:glowTexture(),dyn:[]};
  scene.background=col(th.fog);scene.fog=new THREE.Fog(col(th.fog).lerp(col(th.wall),.5),14,60);
- const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
+ const pm=new THREE.PMREMGenerator(renderer);E.pmrem=pm;scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
  // lights
  const hemi=new THREE.HemisphereLight(th.key,fcol0(th),.75);scene.add(hemi);
  const key=new THREE.SpotLight(th.key,120,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=1?2048:512;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
@@ -76,19 +76,19 @@ export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||T
  const fl=new THREE.Mesh(new THREE.PlaneGeometry(60,60),floorM);fl.rotation.x=-Math.PI/2;fl.position.set(0,-.012,-8);fl.receiveShadow=true;scene.add(fl);
  // lane
  const laneTex=laneTexture(th,renderer.capabilities.getMaxAnisotropy());E.laneTex=laneTex;
- const laneM=new THREE.MeshPhysicalMaterial({map:laneTex,roughness:.2,metalness:0,clearcoat:1,clearcoatRoughness:.05,envMapIntensity:1.5});E.laneM=laneM;
+ const laneM=new THREE.MeshPhysicalMaterial({color:new THREE.Color().setScalar(th.dim||1),map:laneTex,roughness:.2,metalness:0,clearcoat:1,clearcoatRoughness:.05,envMapIntensity:1.5});E.laneM=laneM;
  const LL=23.45,lane=new THREE.Mesh(new THREE.PlaneGeometry(1.053,LL,1,1),laneM);lane.rotation.x=-Math.PI/2;lane.position.set(0,0,4-LL/2);lane.receiveShadow=true;scene.add(lane);E.lane=lane;
  const gutM=new THREE.MeshStandardMaterial({color:0x2a2c3a,roughness:.4,metalness:.4,side:THREE.DoubleSide,envMapIntensity:.6});
- const capM=new THREE.MeshPhysicalMaterial({color:col(th.wood2).lerp(col(th.wall),.35),roughness:.18,metalness:.2,clearcoat:.8,envMapIntensity:1});
+ const capM=new THREE.MeshPhysicalMaterial({color:col(th.wood2).multiplyScalar(.6).lerp(col(th.wall),.25),roughness:.18,metalness:.2,clearcoat:.8,envMapIntensity:1});
  const ledM=new THREE.MeshBasicMaterial({color:th.acc});const ledM2=new THREE.MeshBasicMaterial({color:th.acc2});E.led=[ledM,ledM2];
  function laneSet(cx,full){const G=new THREE.Group();G.position.x=cx;
   [-1,1].forEach(sd=>{const gm=new THREE.Mesh(new THREE.CylinderGeometry(.078,.078,LL,24,1,true,sd>0?0:Math.PI,Math.PI),gutM);gm.rotation.x=Math.PI/2;gm.rotation.z=0;gm.position.set(sd*(HW+.078),0,4-LL/2);gm.scale.y=1;gm.rotation.set(Math.PI/2,0,0);G.add(gm);
-   const cap=box(.5,.06,LL,capM,sd*(HW+.156+.25),-.03,4-LL/2,false,true);G.add(cap);const led=box(.012,.012,LL,sd>0?ledM:ledM2,sd*(HW+.158),.003,4-LL/2,false,false);G.add(led);
+   const cap=box(.34,.06,LL,capM,sd*(HW+.156+.17),-.03,4-LL/2,false,true);G.add(cap);const led=box(.012,.012,LL,sd>0?ledM:ledM2,sd*(HW+.158),.003,4-LL/2,false,false);G.add(led);
    const wall=box(.05,.1,LL,capM,sd*(HW+.156+.5),.05,4-LL/2,true,true);G.add(wall)});
   return G}
  const main=laneSet(0,true);scene.add(main);
  // neighbor lanes (instanced pins + plane copies)
- const nm=new THREE.MeshPhysicalMaterial({map:laneTex,roughness:.25,clearcoat:.8,clearcoatRoughness:.1,envMapIntensity:1.1,color:0xbbbbbb});
+ const nm=new THREE.MeshPhysicalMaterial({map:laneTex,roughness:.25,clearcoat:.8,clearcoatRoughness:.1,envMapIntensity:1.1,color:new THREE.Color().setScalar(.73*(th.dim||1))});
  const pinG=pinGeometry();E.pinG=pinG;
  const pinM=new THREE.MeshPhysicalMaterial({color:0xe6e1d6,vertexColors:true,roughness:.26,clearcoat:1,clearcoatRoughness:.08,sheen:.5,sheenColor:new THREE.Color(0xffffff),sheenRoughness:.5,envMapIntensity:1.1});E.pinM=pinM;
  [-3.6,-1.8,1.8,3.6].forEach(cx=>{const ln=new THREE.Mesh(new THREE.PlaneGeometry(1.053,LL),nm);ln.rotation.x=-Math.PI/2;ln.position.set(cx,0,4-LL/2);ln.receiveShadow=true;scene.add(ln);scene.add(laneSet(cx,false));
@@ -98,7 +98,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||T
 // lane surface detail: oil-pattern roughness + wood bump
  {const rc=cvs(32,1024),rx=rc.getContext('2d'),yz=z=>(4-z)/23.45*1024;rx.fillStyle='#4a4a4a';rx.fillRect(0,0,32,1024);
   const rg=rx.createLinearGradient(0,yz(0),0,yz(-14.5));rg.addColorStop(0,'#1c1c1c');rg.addColorStop(.75,'#242424');rg.addColorStop(.86,'#5a5a5a');rg.addColorStop(1,'#6a6a6a');rx.fillStyle=rg;rx.fillRect(0,yz(0),32,yz(-14.5)-yz(0));
-  rx.fillStyle='#6a6a6a';rx.fillRect(0,yz(-14.5),32,1024-yz(-14.5));const rt=new THREE.CanvasTexture(rc);rt.colorSpace=THREE.NoColorSpace;laneM.roughnessMap=rt;laneM.roughness=1;laneM.bumpMap=laneTex;laneM.bumpScale=.35;laneM.needsUpdate=true;
+  rx.fillStyle='#6a6a6a';rx.fillRect(0,yz(-14.5),32,1024-yz(-14.5));const rt=new THREE.CanvasTexture(rc);rt.colorSpace=THREE.NoColorSpace;laneM.roughnessMap=rt;laneM.roughness=1;laneM.needsUpdate=true;
   nm.roughnessMap=rt;nm.roughness=1;nm.needsUpdate=true}
  // pit + masking unit
  const pit=box(4.8,.7,2,new THREE.MeshStandardMaterial({color:0x050507,roughness:.9}),0,-.3,PIT-1,false,true);scene.add(pit);
