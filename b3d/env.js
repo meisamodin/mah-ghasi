@@ -54,8 +54,8 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
  // lights
  const hemi=new THREE.HemisphereLight(th.key,th.floor,.55);scene.add(hemi);
- const key=new THREE.SpotLight(th.key,260,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=2?4096:q>=1?2048:1024;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
- const deck=new THREE.SpotLight(0xffffff,150,14,.5,.7,1.5);deck.position.set(0,3.6,-16.2);deck.target.position.set(0,0,-18.3);scene.add(deck,deck.target);E.deck=deck;
+ const key=new THREE.SpotLight(th.key,260,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=2?2048:q>=1?1024:512;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
+ const deck=new THREE.SpotLight(0xffffff,85,14,.5,.7,1.5);deck.position.set(0,3.6,-16.2);deck.target.position.set(0,0,-18.3);scene.add(deck,deck.target);E.deck=deck;
  const app=new THREE.SpotLight(th.key,120,10,.9,.8,1.6);app.position.set(0,3.8,2.6);app.target.position.set(0,0,.5);scene.add(app,app.target);E.app=app;
  const fillL=new THREE.PointLight(th.acc,14,20,1.6);fillL.position.set(-3,1.3,-8);scene.add(fillL);const fillR=new THREE.PointLight(th.acc2,14,20,1.6);fillR.position.set(3,1.3,-8);scene.add(fillR);E.fillL=fillL;E.fillR=fillR;
  // floor
@@ -115,7 +115,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
  scene.add(box(20,5.2,.3,backM,0,2.4,6.4,false,true));
  // ball return machine
  const br=new THREE.Group(),brM=new THREE.MeshPhysicalMaterial({color:0x252a48,roughness:.3,metalness:.5,clearcoat:.5,envMapIntensity:1});br.add(box(.5,.62,.9,brM,0,.31,0,true,true));const hood=new THREE.Mesh(new THREE.SphereGeometry(.34,24,12,0,Math.PI*2,0,Math.PI/2),brM);hood.scale.set(1,.8,1.4);hood.position.set(0,.62,0);hood.castShadow=true;br.add(hood);
- const brLed=box(.02,.02,.9,ledM,.26,.5,0,false,false);br.add(brLed);br.add(box(.012,.012,.9,ledM2,-.26,.5,0,false,false));br.position.set(HW+.156+.5+.35,0,2.2);scene.add(br);E.br=br;E.brPos=new THREE.Vector3(br.position.x,.72,br.position.z);
+ const brLed=box(.02,.02,.9,ledM,.26,.5,0,false,false);br.add(brLed);br.add(box(.012,.012,.9,ledM2,-.26,.5,0,false,false));br.position.set(HW+.156+.5+.35,0,2.2);br.scale.setScalar(.72);scene.add(br);E.br=br;E.brPos=new THREE.Vector3(br.position.x,.72,br.position.z);
  // sweeper bar
  const bar=new THREE.Mesh(new THREE.BoxGeometry(1.35,.06,.07),new THREE.MeshStandardMaterial({color:0x9097a8,metalness:.9,roughness:.25}));bar.position.set(0,1.6,-16.2);bar.castShadow=true;scene.add(bar);E.bar=bar;
  // dust motes

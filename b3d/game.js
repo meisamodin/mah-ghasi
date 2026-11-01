@@ -24,22 +24,22 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  <div id="b3ban" style="position:absolute;left:0;right:0;top:38%;text-align:center;pointer-events:none"></div>`;
  const sheet=document.createElement('div');sheet.className='sheet';root.appendChild(sheet);const fin=document.createElement('div');fin.className='fin';root.appendChild(fin);
  // ------------ renderer ------------
- const o=o0();let QL=o.b3q===undefined?(innerWidth*innerHeight>600000?2:1):o.b3q;
+ const o=o0();let QL=o.b3v===2&&o.b3q!==undefined?o.b3q:1;
  let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:QL<1,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.test})}catch(e){root.remove();if(W_.toast)W_.toast(oL('مرورگر WebGL را پشتیبانی نمی‌کند','WebGL is not supported'));return null}
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;renderer.outputColorSpace=THREE.SRGBColorSpace;
  let scene,E,pins,ball,bowlers=[],cam,composer,bloom,artCv,artCx,artT=0,artS,pcount=0;
- const dprMax=QL>=2?2.5:QL>=1?2:1.25;let PR=Math.min(W_.devicePixelRatio||1,dprMax);
+ const dprOf=q=>q>=2?2:q>=1?1.6:1.1;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
  function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?58:44;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
  // ------------ scene ------------
  function build(){if(scene){scene.traverse(x=>{if(x.geometry)x.geometry.dispose&&x.geometry.dispose()})}scene=new THREE.Scene();const ti=o0().bt||0;artCv=document.createElement('canvas');artCv.width=1024;artCv.height=384;artCx=artCv.getContext('2d');artS={stars:Array.from({length:46},()=>[Math.random(),Math.random(),rnd(.8,2),rnd(1,3)]),f:0,k:0};
   E=buildEnv(scene,renderer,ti,QL,artCv);pins=A.makePins(scene,E);
   cam=new THREE.PerspectiveCamera(58,1,.05,90);cam.position.set(.4,1.7,4.6);scene.add(cam);
   ball=A.makeBall(...ballCols());scene.add(ball);
-  [0,1].forEach(i=>{const b=A.makeBowler(i?{shirt:0x1f9d57,shirt2:0x0e5c34,skin:0xa8744f,hair:0xc9a15a,pants:0x3b3d48,num:9}:shirtFor(ti));b.visible=false;scene.add(b);bowlers[i]=b});
+  [0,1].forEach(i=>{const b=A.makeBowler(i?{shirt:0x1f9d57,shirt2:0x0e5c34,skin:0xa8744f,hair:0xc9a15a,pants:0x3b3d48,num:9}:shirtFor(ti));b.visible=false;b.scale.setScalar(.9);scene.add(b);bowlers[i]=b});
   // bumpers
   E.bump=[-1,1].map(sd=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.05,.09,P.PZ0*-1+3.5),new THREE.MeshPhysicalMaterial({color:E.th.acc,roughness:.3,clearcoat:.6}));m.position.set(sd*(P.HW+.02),.045,-8.3);m.castShadow=true;scene.add(m);return m});
   buildGauge();
-  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:THREE.HalfFloatType,samples:QL>=2?4:2});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w,h),QL>=2?.42:.3,.55,.82);composer.addPass(bloom);composer.addPass(new OutputPass())}
+  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:THREE.HalfFloatType,samples:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w,h),QL>=2?.3:.2,.5,.95);composer.addPass(bloom);composer.addPass(new OutputPass())}
   resize();parts()}
  function shirtFor(ti){const c=(W_.BWT&&W_.BWT[ti])?W_.BWT[ti].shirt:['#c0392b','#8e2a20'];return{shirt:new THREE.Color(c[0]).getHex(),shirt2:new THREE.Color(c[1]).getHex(),num:7}}
  function ballCols(){const b=W_.BWBALLS&&W_.BWBALLS[o0().bbc||0],th=W_.BWT&&W_.BWT[o0().bt||0];if(b&&b.c)return[b.c,b.pat];return[th?th.ball:['#7db7ff','#17358a','#bcd8ff'],'']}
@@ -96,9 +96,9 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  function camSnap(){updCam(0.0,true)}
  function setCam(px,py,pz,lx,ly,lz,k,fovm){CT.p.set(px,py,pz);CT.l.set(lx,ly,lz);CT.k=k||4;CT.fm=fovm||1}
  function directCam(dt){const bx=G.bx,B=G.S&&G.S.ball,o=o0();
-  if(G.st==='walk'){const k=G.t/G.walkDur;setCam(lerp(2.6,.6,k),1.7,lerp(4.4,6.3,k),lerp(.9,0,k),.6,lerp(1.5,-6,k),3)}
-  else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.5+.45,1.95,6.3,bx*.6,.3,-7.5,4.5)}
-  else if(G.st==='throw'){setCam(bx*.5+.5,1.8,5.6,bx*.8,.3,-6,5)}
+  if(G.st==='walk'){const k=G.t/G.walkDur;setCam(lerp(3.4,.6,k),1.9,lerp(5.2,5.9,k),lerp(.9,0,k),.6,lerp(1.5,-6,k),3)}
+  else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.5+.45,1.95,5.9,bx*.6,.3,-7.5,4.5)}
+  else if(G.st==='throw'){setCam(bx*.5+.5,1.85,5.5,bx*.8,.3,-6,5)}
   else if(G.st==='roll'){const m=G.cm;if(!B){setCam(0,1.2,-12,0,.2,-19,2);return}
    const cz=B.z;if(m===1||cz>-9.5){setCam(B.x*.55,.62+Math.max(0,(cz+4)*.03),cz+2.5,B.x*.5,.15,cz-6,7.5)}
    else if(m===2){setCam(0,1.25,-19.9,0,.12,-9,10)}
@@ -128,7 +128,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  sheet.onclick=e=>{const b=e.target.closest('button');if(!b)return;const o=o0(),k=b.dataset.k;if(k==='close'){sheet.classList.remove('open');G.paused=false;return}
   if(k.startsWith('t:')){const kk=k.slice(2);o[kk]=o[kk]?0:1;W_.gxSave();if(kk==='bbump'){G.S.bump=!!o.bbump;E.bump.forEach(m=>m.visible=!!o.bbump)}openSheet();return}
   const i=+b.dataset.i;if(k==='bbc'){const bl=W_.BWBALLS,bb=bl[i];o.bown=o.bown||[];if(bb.cost&&!o.bown.includes(i)){if((o.coin||0)<bb.cost){W_.toast&&W_.toast(oL('سکه‌ی کافی نداری','Not enough coins'));return}o.coin-=bb.cost;o.bown.push(i)}o.bbc=i;W_.gxSave();ball.userData.sphere.material.map=A.ballTexture(...ballCols(),3);ball.userData.sphere.material.needsUpdate=true;openSheet();return}
-  o[k]=i;W_.gxSave();if(k==='bt'||k==='b3q'||k==='bvs'){if(k==='b3q'){QL=i;PR=Math.min(W_.devicePixelRatio||1,QL>=2?2.5:QL>=1?2:1.25)}sheet.classList.remove('open');G.paused=false;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;build();newGame()}else openSheet();quick()};
+  o[k]=i;if(k==='b3q')o.b3v=2;W_.gxSave();if(k==='bt'||k==='b3q'||k==='bvs'){if(k==='b3q'){QL=i;dprMax=dprOf(QL);PR=Math.min(W_.devicePixelRatio||1,dprMax)}sheet.classList.remove('open');G.paused=false;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;build();newGame()}else openSheet();quick()};
 
  // ------------ quick bar (in-game settings) ------------
  function quick(){const o=o0(),bl=W_.BWBALLS||[],bt=W_.BWT||[];const nm=(a,i)=>oL(a[i][0],a[i][1]);
@@ -146,8 +146,8 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   if(k==='bbump'||k==='baim'){o[k]=o[k]?0:1;W_.gxSave();if(k==='bbump'){G.S.bump=!!o.bbump}quick();return}
   let v=((o[k]||0)+1)%N[k];if(k==='b3q')v=((QL)+1)%3;
   if(k==='bbc'){let g=0;while(g++<20){const b=bl[v];o.bown=o.bown||[];if(!b.cost||o.bown.includes(v))break;if((o.coin||0)>=b.cost&&g===1&&0){}v=(v+1)%N.bbc}o.bbc=v;W_.gxSave();ball.userData.sphere.material.map=A.ballTexture(...ballCols(),3);ball.userData.sphere.material.needsUpdate=true;quick();return}
-  o[k]=v;W_.gxSave();
-  if(k==='bt'||k==='b3q'||k==='bvs'){if(k==='b3q'){QL=v;PR=Math.min(W_.devicePixelRatio||1,QL>=2?2.5:QL>=1?2:1.25);renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap}build();newGame()}
+  o[k]=v;if(k==='b3q')o.b3v=2;W_.gxSave();
+  if(k==='bt'||k==='b3q'||k==='bvs'){if(k==='b3q'){QL=v;dprMax=dprOf(QL);PR=Math.min(W_.devicePixelRatio||1,dprMax);renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap}build();newGame()}
   quick()}
  // ------------ input ------------
  function xy(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now(),w:r.width,h:r.height}}
@@ -263,11 +263,11 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   fin.classList.add('show');fin.onclick=e=>{const b=e.target.closest('[data-f]');if(!b)return;if(b.dataset.f==='r')newGame();else close()};confetti(r>=0?90:0)}
  // ------------ loop ------------
  let raf=0,last=performance.now(),dead=false;
- function frame(t){if(dead)return;raf=requestAnimationFrame(frame);const dt=Math.min(.05,(t-last)/1000);last=t;update(dt);render()}
+ function frame(t){if(dead)return;raf=requestAnimationFrame(frame);const dr=(t-last)/1000,dt=Math.min(.05,dr);last=t;update(dt);render();adS+=dr;adN++;if(adS>1.2){const ms=adS/adN*1000;adS=0;adN=0;const mx=Math.min(W_.devicePixelRatio||1,dprMax);if(ms>22&&PR>1){PR=Math.max(1,PR-.2);resize()}else if(ms<13&&PR<mx){PR=Math.min(mx,PR+.1);resize()}}}
  function render(){if(composer)composer.render();else renderer.render(scene,cam)}
  function close(){if(dead)return;dead=true;cancelAnimationFrame(raf);try{renderer.dispose();renderer.forceContextLoss()}catch(_){}root.remove();CUR=null;try{if(document.fullscreenElement)document.exitFullscreen()}catch(_){}opts.onClose&&opts.onClose()}
  // go
  build();buttons();quick();hud.querySelector('#b3q').onclick=e=>{const b=e.target.closest('[data-q]');if(b)quickTap(b.dataset.q)};newGame();window.addEventListener('resize',resize);
  try{const r=root.requestFullscreen||root.webkitRequestFullscreen;if(r&&!opts.test){const q=r.call(root);q&&q.catch&&q.catch(()=>{})}}catch(_){}
  if(!opts.manual)raf=requestAnimationFrame(frame);
- CUR={close,G,update,render,E:()=>E,pins:()=>pins,cam,P};return CUR}
+ CUR={close,G,update,render,comp:()=>composer,E:()=>E,pins:()=>pins,cam,P};return CUR}
