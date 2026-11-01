@@ -50,12 +50,24 @@ export function pinGeometry(){const pts=[[0,0],[.0286,0],[.0300,.008],[.0390,.03
  for(let i=0;i<pos.count;i++){const y=pos.getY(i);let r=1,gg=1,b=1;if((y>.222&&y<.238)||(y>.256&&y<.272)){r=.86;gg=.08;b=.1}if(y<.006){r=.6;gg=.6;b=.6}colA[i*3]=r;colA[i*3+1]=gg;colA[i*3+2]=b}
  g.setAttribute('color',new THREE.BufferAttribute(colA,3));return g}
 function box(w,h,d,m,x,y,z,cast,rec){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);b.castShadow=!!cast;b.receiveShadow=rec!==false;return b}
-export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E={th,lights:[],glow:glowTexture(),dyn:[]};
+function signText(txt,color,w,h,layers,depth){
+ const cw=1024,ch=Math.round(1024*h/w),c=cvs(cw,ch),x=c.getContext('2d');x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';
+ let fs=ch*.8;x.font='900 '+fs+'px Tahoma,Arial,sans-serif';while(x.measureText(txt).width>cw*.88&&fs>24){fs-=6;x.font='900 '+fs+'px Tahoma,Arial,sans-serif'}x.fillText(txt,cw/2,ch/2);
+ const tex=new THREE.CanvasTexture(c);tex.anisotropy=8;tex.colorSpace=THREE.SRGBColorSpace;
+ const gc=cvs(cw,ch),gx=gc.getContext('2d');gx.fillStyle='#fff';gx.textAlign='center';gx.textBaseline='middle';gx.font=x.font;gx.shadowColor='#fff';gx.shadowBlur=ch*.16;gx.fillText(txt,cw/2,ch/2);gx.fillText(txt,cw/2,ch/2);
+ const gtex=new THREE.CanvasTexture(gc);gtex.colorSpace=THREE.SRGBColorSpace;
+ const grp=new THREE.Group(),geo=new THREE.PlaneGeometry(w,h),base=new THREE.Color(color);
+ const gl=new THREE.Mesh(new THREE.PlaneGeometry(w*1.12,h*1.12),new THREE.MeshBasicMaterial({map:gtex,color:base,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false,fog:false}));gl.position.z=-.01;grp.add(gl);
+ for(let i=0;i<layers;i++){const t=i/(layers-1),front=i===layers-1;
+  const c2=front?base.clone().lerp(new THREE.Color(0xffffff),.62):base.clone().multiplyScalar(.12+.4*t*t);
+  const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex,color:c2,alphaTest:.5,toneMapped:false,fog:false}));m.position.z=t*depth;grp.add(m)}
+ return grp}
+export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||TH[0],E={th,lights:[],glow:glowTexture(),dyn:[]};
  scene.background=col(th.fog);scene.fog=new THREE.Fog(col(th.fog).lerp(col(th.wall),.5),14,60);
  const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.55;
  // lights
  const hemi=new THREE.HemisphereLight(th.key,fcol0(th),.75);scene.add(hemi);
- const key=new THREE.SpotLight(th.key,120,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=2?2048:q>=1?1024:512;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
+ const key=new THREE.SpotLight(th.key,120,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=1?2048:512;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
  const deck=new THREE.SpotLight(0xffffff,28,14,.36,.7,1.5);deck.castShadow=q>=1;deck.shadow.mapSize.set(q>=2?2048:1024,q>=2?2048:1024);deck.shadow.bias=-.0003;deck.shadow.normalBias=.012;deck.shadow.camera.near=1.5;deck.shadow.camera.far=9;deck.position.set(0,3.6,-16.2);deck.target.position.set(0,0,-18.3);scene.add(deck,deck.target);E.deck=deck;
  const app=new THREE.SpotLight(th.key,60,10,.9,.8,1.6);app.position.set(0,3.8,2.6);app.target.position.set(0,0,.5);scene.add(app,app.target);E.app=app;
  const fillL=new THREE.PointLight(th.acc,14,20,1.6);fillL.position.set(-3,1.3,-8);scene.add(fillL);const fillR=new THREE.PointLight(th.acc2,14,20,1.6);fillR.position.set(3,1.3,-8);scene.add(fillR);E.fillL=fillL;E.fillR=fillR;
@@ -83,6 +95,11 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
   const im=new THREE.InstancedMesh(pinG,pinM,10);let i=0;const m4=new THREE.Matrix4();for(let r=0;r<4;r++)for(let k=0;k<=r;k++){m4.makeTranslation(cx+(k-r/2)*.305,0,PZ0-r*.264);im.setMatrixAt(i++,m4)}im.castShadow=true;scene.add(im);
   // ball return / bridge lights over neighbors
   });
+// lane surface detail: oil-pattern roughness + wood bump
+ {const rc=cvs(32,1024),rx=rc.getContext('2d'),yz=z=>(4-z)/23.45*1024;rx.fillStyle='#4a4a4a';rx.fillRect(0,0,32,1024);
+  const rg=rx.createLinearGradient(0,yz(0),0,yz(-14.5));rg.addColorStop(0,'#1c1c1c');rg.addColorStop(.75,'#242424');rg.addColorStop(.86,'#5a5a5a');rg.addColorStop(1,'#6a6a6a');rx.fillStyle=rg;rx.fillRect(0,yz(0),32,yz(-14.5)-yz(0));
+  rx.fillStyle='#6a6a6a';rx.fillRect(0,yz(-14.5),32,1024-yz(-14.5));const rt=new THREE.CanvasTexture(rc);rt.colorSpace=THREE.NoColorSpace;laneM.roughnessMap=rt;laneM.roughness=1;laneM.bumpMap=laneTex;laneM.bumpScale=.35;laneM.needsUpdate=true;
+  nm.roughnessMap=rt;nm.roughness=1;nm.needsUpdate=true}
  // pit + masking unit
  const pit=box(4.8,.7,2,new THREE.MeshStandardMaterial({color:0x050507,roughness:.9}),0,-.3,PIT-1,false,true);scene.add(pit);
  const backM=new THREE.MeshStandardMaterial({color:col(th.wall).lerp(col(th.wood2),.2),roughness:.55,metalness:.2,envMapIntensity:.6});
@@ -91,6 +108,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
  const sm=new THREE.MeshBasicMaterial({map:artTex,toneMapped:false});
  [0,-3.6,3.6,-1.8,1.8].forEach((cx,i)=>{const w=i===0?3.5:1.7,h=i===0?1.35:.95,y=i===0?2.45:2.05,s=new THREE.Mesh(new THREE.PlaneGeometry(w,h),sm);s.position.set(cx,y,PIT-1.88);scene.add(s);
   const fr=new THREE.Mesh(new THREE.BoxGeometry(w+.12,h+.12,.06),new THREE.MeshBasicMaterial({color:i%2?th.acc2:th.acc}));fr.position.set(cx,y,PIT-1.92);scene.add(fr)});
+if(title){const sg=signText(title,th.acc,3.0,.95,14,.16);sg.position.set(0,2.45,PIT-1.74);scene.add(sg);E.sign=sg}
  // lower masking face with LED trim
  const trimGeo=new THREE.BoxGeometry(18,.03,.03);[.9,1.0].forEach((y,i)=>{const t=new THREE.Mesh(trimGeo,i?ledM2:ledM);t.position.set(0,y,PIT-1.87);scene.add(t)});
  const curt=box(4.4,1.0,.06,new THREE.MeshStandardMaterial({color:th.wall,roughness:.9}),0,.5,PIT-.1,false,true);scene.add(curt);
