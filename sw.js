@@ -1,4 +1,4 @@
-const C='mah-ghasi-v92',F=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
+const C='mah-ghasi-v93',F=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 const sig=r=>r?(r.headers.get('etag')||r.headers.get('last-modified')||r.headers.get('content-length')||''):'';

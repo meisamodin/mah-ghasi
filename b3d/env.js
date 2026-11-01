@@ -72,7 +72,13 @@ export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||T
  const app=new THREE.SpotLight(th.key,60,10,.9,.8,1.6);app.position.set(0,3.8,2.6);app.target.position.set(0,0,.5);scene.add(app,app.target);E.app=app;
  const fillL=new THREE.PointLight(th.acc,14,20,1.6);fillL.position.set(-3,1.3,-8);scene.add(fillL);const fillR=new THREE.PointLight(th.acc2,14,20,1.6);fillR.position.set(3,1.3,-8);scene.add(fillR);E.fillL=fillL;E.fillR=fillR;
  // floor
- const fcol=col(th.floor).lerp(col(th.wall),.55).lerp(col(th.wood2),.18);const floorM=new THREE.MeshPhysicalMaterial({color:fcol,roughness:.3,metalness:.1,clearcoat:.6,clearcoatRoughness:.2,envMapIntensity:.7});
+ const fcol=col(th.floor).lerp(col(th.wall),.55).lerp(col(th.wood2),.18);
+ const ftx=(()=>{const c=cvs(512,512),x=c.getContext('2d'),b=fcol.getStyle();x.fillStyle=b;x.fillRect(0,0,512,512);for(let i=0;i<4;i++)for(let j=0;j<4;j++){const k=(i+j)%2;x.fillStyle=k?'rgba(255,255,255,.07)':'rgba(0,0,0,.10)';x.fillRect(i*128,j*128,128,128)}
+  for(let n=0;n<2200;n++){x.fillStyle='rgba('+(n%2?'255,255,255':'0,0,0')+','+(Math.random()*.05)+')';x.fillRect(Math.random()*512,Math.random()*512,2,2)}
+  x.strokeStyle='rgba(0,0,0,.28)';x.lineWidth=3;for(let i=0;i<=4;i++){x.beginPath();x.moveTo(i*128,0);x.lineTo(i*128,512);x.stroke();x.beginPath();x.moveTo(0,i*128);x.lineTo(512,i*128);x.stroke()}
+  x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=1.5;for(let i=0;i<4;i++)for(let j=0;j<4;j++){if((i+j)%2)continue;x.beginPath();x.moveTo(i*128+64,j*128+14);x.lineTo(i*128+114,j*128+64);x.lineTo(i*128+64,j*128+114);x.lineTo(i*128+14,j*128+64);x.closePath();x.stroke()}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(24,24);t.anisotropy=8;return t})();
+ const floorM=new THREE.MeshPhysicalMaterial({color:0xffffff,map:ftx,roughness:.55,metalness:.05,clearcoat:.25,clearcoatRoughness:.35,envMapIntensity:.45});
  const fl=new THREE.Mesh(new THREE.PlaneGeometry(60,60),floorM);fl.rotation.x=-Math.PI/2;fl.position.set(0,-.012,-8);fl.receiveShadow=true;scene.add(fl);
  // lane
  const laneTex=laneTexture(th,renderer.capabilities.getMaxAnisotropy());E.laneTex=laneTex;
@@ -83,15 +89,15 @@ export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||T
  const ledM=new THREE.MeshBasicMaterial({color:th.acc});const ledM2=new THREE.MeshBasicMaterial({color:th.acc2});E.led=[ledM,ledM2];
  function laneSet(cx,full){const G=new THREE.Group();G.position.x=cx;
   [-1,1].forEach(sd=>{const gm=new THREE.Mesh(new THREE.CylinderGeometry(.078,.078,LL,24,1,true,sd>0?0:Math.PI,Math.PI),gutM);gm.rotation.x=Math.PI/2;gm.rotation.z=0;gm.position.set(sd*(HW+.078),0,4-LL/2);gm.scale.y=1;gm.rotation.set(Math.PI/2,0,0);G.add(gm);
-   const cap=box(.34,.06,LL,capM,sd*(HW+.156+.17),-.03,4-LL/2,false,true);G.add(cap);const led=box(.012,.012,LL,sd>0?ledM:ledM2,sd*(HW+.158),.003,4-LL/2,false,false);G.add(led);
-   const wall=box(.05,.1,LL,capM,sd*(HW+.156+.5),.05,4-LL/2,true,true);G.add(wall)});
+   const cap=box(.14,.06,LL,capM,sd*(HW+.156+.07),-.03,4-LL/2,false,true);G.add(cap);const led=box(.012,.012,LL,sd>0?ledM:ledM2,sd*(HW+.158),.003,4-LL/2,false,false);G.add(led);
+   const wall=box(.05,.1,LL,capM,sd*(HW+.156+.14),.05,4-LL/2,true,true);G.add(wall)});
   return G}
  const main=laneSet(0,true);scene.add(main);
  // neighbor lanes (instanced pins + plane copies)
  const nm=new THREE.MeshPhysicalMaterial({map:laneTex,roughness:.25,clearcoat:.8,clearcoatRoughness:.1,envMapIntensity:1.1,color:new THREE.Color().setScalar(.73*(th.dim||1))});
  const pinG=pinGeometry();E.pinG=pinG;
  const pinM=new THREE.MeshPhysicalMaterial({color:0xe6e1d6,vertexColors:true,roughness:.26,clearcoat:1,clearcoatRoughness:.08,sheen:.5,sheenColor:new THREE.Color(0xffffff),sheenRoughness:.5,envMapIntensity:1.1});E.pinM=pinM;
- [-3.6,-1.8,1.8,3.6].forEach(cx=>{const ln=new THREE.Mesh(new THREE.PlaneGeometry(1.053,LL),nm);ln.rotation.x=-Math.PI/2;ln.position.set(cx,0,4-LL/2);ln.receiveShadow=true;scene.add(ln);scene.add(laneSet(cx,false));
+ [-3,-1.5,1.5,3].forEach(cx=>{const ln=new THREE.Mesh(new THREE.PlaneGeometry(1.053,LL),nm);ln.rotation.x=-Math.PI/2;ln.position.set(cx,0,4-LL/2);ln.receiveShadow=true;scene.add(ln);scene.add(laneSet(cx,false));
   const im=new THREE.InstancedMesh(pinG,pinM,10);let i=0;const m4=new THREE.Matrix4();for(let r=0;r<4;r++)for(let k=0;k<=r;k++){m4.makeTranslation(cx+(k-r/2)*.305,0,PZ0-r*.264);im.setMatrixAt(i++,m4)}im.castShadow=true;scene.add(im);
   // ball return / bridge lights over neighbors
   });
@@ -106,9 +112,10 @@ export function buildEnv(scene,renderer,ti,q,artCanvas,title){const th=TH[ti]||T
  const mask=box(18,5.2,.4,backM,0,2.4,PIT-2.1,false,true);scene.add(mask);
  const artTex=new THREE.CanvasTexture(artCanvas);artTex.colorSpace=THREE.SRGBColorSpace;artTex.anisotropy=4;E.artTex=artTex;
  const sm=new THREE.MeshBasicMaterial({map:artTex,toneMapped:false});
- [0,-3.6,3.6,-1.8,1.8].forEach((cx,i)=>{const w=i===0?3.5:1.7,h=i===0?1.35:.95,y=i===0?2.45:2.05,s=new THREE.Mesh(new THREE.PlaneGeometry(w,h),sm);s.position.set(cx,y,PIT-1.88);scene.add(s);
+ [0,-3,3,-1.5,1.5].forEach((cx,i)=>{const w=i===0?3.5:1.38,h=i===0?1.35:.95,y=i===0?2.45:2.05,s=new THREE.Mesh(new THREE.PlaneGeometry(w,h),sm);s.position.set(cx,y,PIT-1.88);scene.add(s);
   const fr=new THREE.Mesh(new THREE.BoxGeometry(w+.12,h+.12,.06),new THREE.MeshBasicMaterial({color:i%2?th.acc2:th.acc}));fr.position.set(cx,y,PIT-1.92);scene.add(fr)});
 if(title){const sg=signText(title,th.acc,3.0,.95,14,.16);sg.position.set(0,2.45,PIT-1.74);scene.add(sg);E.sign=sg}
+ [[-3,'١'],[-1.5,'٢'],[1.5,'٤'],[3,'٥']].forEach(([cx,n])=>{const s2=signText(n,cx<0?th.acc2:th.acc,.5,.4,8,.06);s2.position.set(cx,3.0,PIT-1.74);scene.add(s2)});
  // lower masking face with LED trim
  const trimGeo=new THREE.BoxGeometry(18,.03,.03);[.9,1.0].forEach((y,i)=>{const t=new THREE.Mesh(trimGeo,i?ledM2:ledM);t.position.set(0,y,PIT-1.87);scene.add(t)});
  const curt=box(4.4,1.0,.06,new THREE.MeshStandardMaterial({color:th.wall,roughness:.9}),0,.5,PIT-.1,false,true);scene.add(curt);
@@ -134,7 +141,7 @@ if(title){const sg=signText(title,th.acc,3.0,.95,14,.16);sg.position.set(0,2.45,
  scene.add(box(20,5.2,.3,backM,0,2.4,6.4,false,true));
  // ball return machine
  const br=new THREE.Group(),brM=new THREE.MeshPhysicalMaterial({color:0x6c7396,roughness:.22,metalness:.75,clearcoat:.8,envMapIntensity:1.4});br.add(box(.5,.62,.9,brM,0,.31,0,true,true));const hood=new THREE.Mesh(new THREE.SphereGeometry(.34,24,12,0,Math.PI*2,0,Math.PI/2),brM);hood.scale.set(1,.5,1.4);hood.position.set(0,.62,0);hood.castShadow=true;br.add(hood);
- const brLed=box(.02,.02,.9,ledM,.26,.5,0,false,false);br.add(brLed);br.add(box(.012,.012,.9,ledM2,-.26,.5,0,false,false));br.position.set(HW+.156+.5+.35,0,2.2);br.scale.setScalar(.72);scene.add(br);E.br=br;E.brPos=new THREE.Vector3(br.position.x,.72,br.position.z);
+ const brLed=box(.02,.02,.9,ledM,.26,.5,0,false,false);br.add(brLed);br.add(box(.012,.012,.9,ledM2,-.26,.5,0,false,false));br.position.set(HW+.156+.14+.2,0,2.2);br.scale.setScalar(.72);scene.add(br);E.br=br;E.brPos=new THREE.Vector3(br.position.x,.72,br.position.z);
  // sweeper bar
  const bar=new THREE.Mesh(new THREE.BoxGeometry(1.35,.06,.07),new THREE.MeshStandardMaterial({color:0x9097a8,metalness:.9,roughness:.25}));bar.position.set(0,1.6,-16.2);bar.castShadow=true;scene.add(bar);E.bar=bar;
  // dust motes
