@@ -21,18 +21,7 @@ document.addEventListener('input',e=>{if(e.target.id!=='tq')return;const q=e.tar
 
 /* spouse mode */
 function spActive(){return !!S.sp}
-function spouseCard(){const I=info(),pl=S.period||5;let t,i='🤝';
- if(S.mode==='preg'){t='همسرت باردار است. کمک در کارهای سنگین، همراهی در ویزیت‌ها، صبوری با تغییرات خلق و تهیه‌ی غذای سالم بیشترین کمک را می‌کند. مقاله‌ها و ابزارهای بارداری برای شما هم مفیدند.'}
- else if(S.mode==='baby'){t='دوران نوزاد خسته‌کننده است. نوبتی بیدار ماندن شب، کمک در کارهای خانه و پرسیدن «حالت چطوره؟» مهم‌تر از هر هدیه‌ای است. اگر همسرت غمگین یا بی‌حوصله‌ی طولانی است، با پزشک مشورت کنید.'}
- else if(S.mode==='meno'){t='تغییرات این دوران (گرگرفتگی، خواب بد، نوسان خلق) طبیعی است. صبور باشید، محیط خنک و آرام فراهم کنید و در صورت نیاز او را به پزشک همراهی کنید.'}
- else if(I.day<=pl){t='همسرت احتمالاً در روزهای پریود است. دل‌درد و خستگی شایع است؛ کمک در کارها، نوشیدنی گرم و کمی صبوری کمک می‌کند.'}
- else if(I.pms){t='نزدیک پریود است و ممکن است حساس‌تر یا خسته‌تر باشد. قضاوت نکنید، گوش بدهید و فشار اضافه نیاورید.'}
- else if(I.fertile){t='این روزها در پنجره‌ی باروری است. اگر قصد بارداری دارید زمان مهمی است؛ اگر ندارید روش پیشگیری را فراموش نکنید.'}
- else{t='فاز عادی چرخه است و انرژی معمولاً خوب است؛ فرصت خوبی برای برنامه‌ی دو نفره.'}
- return`<div class="card"><h3>${i} ${oL('حالت همسر','Partner mode')}</h3><div class="mu" style="line-height:1.9">${t}</div>${S.mode==='preg'||S.mode==='baby'||S.mode==='meno'?'':`<div class="mu" style="margin-top:6px">${oL('پریود بعدی','Next period')}: <b>${jf(I.next,{day:'numeric',month:'long'})}</b></div>`}<div class="mu" style="font-size:12px;margin-top:6px">این اطلاعات عمومی است و جای مشورت پزشکی را نمی‌گیرد.</div></div>`}
 function spTabs(){return TABS.filter(t=>['home','not','set'].includes(t[0])).concat([['tl','🧰','ابزار']]).sort((a,b)=>['home','tl','not','set'].indexOf(a[0])-['home','tl','not','set'].indexOf(b[0]))}
-function spSetCard(){return`<div class="card"><h3>🎛 ${oL('حالت همسر','Partner mode')}</h3><div class="mu">اگه این برنامه رو همسر یا یکی از اطرافیان بانو استفاده می‌کنه، این حالت تب‌های شخصی (ثبت علائم، PMS و سلامت) رو پنهان می‌کنه و فقط خانه، ابزارها، اعلان‌ها و تنظیمات رو نشون می‌ده.</div><button class="btn ${S.sp?'o':''}" style="width:100%;margin-top:8px" data-a="spt">${S.sp?'خاموش کردن حالت همسر':'روشن کردن حالت همسر'}</button></div>`}
-
 /* backup + privacy cards */
 function bkSetCard(){const L=S.lbk;return`<div class="card" style="border:1.5px solid var(--pk)"><h3>🛟 ${oL('پشتیبان‌گیری از اطلاعات','Backup your data')}</h3><div class="mu" style="line-height:1.9">اطلاعاتت فقط روی همین گوشی ذخیره می‌شه. اگه داده‌های مرورگر پاک بشه یا گوشی عوض کنی، بدون فایل پشتیبان از بین می‌ره.<br><b>${L?'آخرین فایل پشتیبان: '+dtf(L):'هنوز فایل پشتیبان نگرفتی.'}</b></div><button class="btn" style="width:100%;margin-top:8px" data-a="bkd">📥 دانلود فایل پشتیبان</button><div class="mu" style="font-size:12px;margin-top:6px">برای برگردوندن اطلاعات، پایین‌تر در همین تنظیمات «بازیابی» رو بزن.</div></div>`}
 function prvCard(){if(!S.pin)return`<div class="card"><h3>🔒 ${oL('رمز فریب و پاک‌سازی','Decoy PIN & wipe')}</h3><div class="mu">اول بالاتر «قفل برنامه» رو فعال کن؛ بعدش می‌تونی رمز فریب و پاک‌سازی خودکار رو تنظیم کنی.</div></div>`;

@@ -98,7 +98,7 @@ nav button.on{background:linear-gradient(180deg,var(--soft),#fff);box-shadow:ins
 .atip,.awarn{display:flex;gap:8px;align-items:flex-start;border-radius:14px;padding:10px 12px;margin:10px 0;font-size:13.5px;line-height:1.9}
 .atip{background:rgba(255,193,7,.14);border:1px solid rgba(255,193,7,.45)}
 .awarn{background:rgba(225,29,72,.1);border:1px solid rgba(225,29,72,.4)}
-</style></head>
+</style><style>ul.spl{margin:6px 0 10px;padding-inline-start:20px;line-height:1.9;font-size:14px}ul.spl li{margin-bottom:4px}details summary{outline:none}</style></head>
 <body>
 <div id="app"></div>
 <nav><div id="nav"></div></nav>
@@ -193,7 +193,7 @@ function tip(I){
 }
 function todayCard(){const k=iso(today()),L=S.logs[k]||{moods:[],phys:[],water:0},g=S.goal||8;
  return`<div class="card" style="margin-top:12px"><h3>📋 امروز</h3><div class="mu">حالت چطوره؟</div><div class="chips" style="margin:6px 0 10px">${MOODS.map(x=>`<button class="chip ${L.moods.includes(x)?'on':''}" data-a="t" data-k="moods" data-v="${x}">${x}</button>`).join('')}</div><div class="note" style="margin:0 0 8px;align-items:center"><span class="ic">💧</span><div style="flex:1"><b>${fa(L.water)} از ${fa(g)} لیوان</b><div style="height:6px;border-radius:5px;background:var(--bd);margin-top:6px"><div style="width:${Math.min(100,L.water/g*100)}%;height:100%;border-radius:5px;background:#0ea5e9"></div></div></div><button class="btn o step" data-a="w-">−</button><button class="btn o step" data-a="w+">+</button></div><div class="mu">${L.phys.length?'علائم ثبت‌شده: '+L.phys.join('، '):'هنوز علامت جسمی ثبت نکردی.'}</div><button class="btn o" style="width:100%;margin-top:8px" data-t="log">ثبت علائم کامل</button></div>`}
-function home(){if(S.sp)return(S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'')+alertsCard()+aptCard()+spouseCard()+modeCard()+artDayCard()+calCard();if(quiet()){return(S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'')+alertsCard()+aptCard()+bmNote()+stBanner()+msBanner()+modeCard()+todayCard()+goalsCard()+artDayCard()+motCard()+calCard()}return home0()}
+function home(){if(S.sp)return(S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'')+alertsCard()+aptCard()+spHome();if(quiet()){return(S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'')+alertsCard()+aptCard()+bmNote()+stBanner()+msBanner()+modeCard()+todayCard()+goalsCard()+artDayCard()+motCard()+calCard()}return home0()}
 function home0(){const I=info();
  return`${S.prof.name?'<div style="margin:0 4px 10px;font-weight:600">سلام '+esc(S.prof.name)+' جان 💗</div>':'<div class="card" data-t="hl" style="cursor:pointer;margin-bottom:10px"><b>👤 مشخصاتت رو وارد کن</b><div class="mu">اسم، سن، قد و وزن رو بنویس تا تحلیل بدنت رو ببینی (تب سلامت)</div></div>'}${alertsCard()}${aptCard()}${lateCard()}${bmNote()}${hyCard()}${stBanner()}${msBanner()}${cycSug()}${bkRemind()}${fertNote()}${ttcCard()}${modeNote()}${week()}<div class="card" style="text-align:center">${dial(I)}
  <div class="mu">${EDL.dial?oL('حالا دایره رو با انگشتت بچرخون؛ بعدش «تأیید» رو بزن.','Now turn the circle with your finger, then tap "Done".'):oL('برای تغییر روز چرخه، اول «ویرایش» رو بزن.','To change the cycle day, tap "Edit" first.')}</div><div style="margin-top:8px">${edBtn('dial','','','edd')}</div>
@@ -627,17 +627,17 @@ function icsCard(){return`<div class="card"><h3>📅 اعلان واقعی با 
 function icsDownload(){const I=info(),C=S.cycle,P=S.period,N=ntInit(),bf=N.period.before||2,t0=today(),st=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';let u=0;const d8=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
  const ev=(title,a,days,al)=>{if(add(a,days)<=t0)return[];return['BEGIN:VEVENT','UID:mg'+(++u)+'-'+d8(a)+'@mahghasi','DTSTAMP:'+st,'DTSTART;VALUE=DATE:'+d8(a),'DTEND;VALUE=DATE:'+d8(add(a,days)),'SUMMARY:'+title,'TRANSP:TRANSPARENT'].concat(al.flatMap(x=>['BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+title,'TRIGGER:'+x,'END:VALARM']),['END:VEVENT'])};
  let L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mah Ghasi//FA','CALSCALE:GREGORIAN'];
- for(let i=0;i<6;i++){const s=add(I.next,i*C),ov=add(s,-15);L=L.concat(ev('🩸 پریود',s,P,['PT9H','-PT'+(bf*24-9)+'H']),ev('💜 PMS',add(s,-7),7,['PT9H']),ev('🌸 تخمک‌گذاری',ov,1,['PT9H']),ev('🌱 بازه باروری',add(ov,-5),7,[]))}
+ for(let i=0;i<6;i++){const s=add(I.next,i*C),ov=add(s,-15);L=L.concat(ev('🩸 پریود'+spN(),s,P,['PT9H','-PT'+(bf*24-9)+'H']),ev('💜 PMS'+spN(),add(s,-7),7,['PT9H']),ev('🌸 تخمک‌گذاری',ov,1,['PT9H']),ev('🌱 بازه باروری',add(ov,-5),7,[]))}
  L.push('END:VCALENDAR');
  try{const bl=new Blob([L.join('\r\n')],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(bl),a=document.createElement('a');a.href=url;a.download='mah-ghasi.ics';document.body.appendChild(a);a.click();a.remove();toast('فایل تقویم آماده شد')}catch(e){toast('دانلود انجام نشد')}}
 function remCheck(){const N=ntInit(),n=new Date(),k=iso(n),h=n.getHours(),hm=String(h).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');S.nl=S.nl||{};
  const I=info(),L=lateInfo(),out=[],due=t=>N[t].on&&hm>=N[t].time&&S.nl[t]!==k;aptRem(out,hm);
- if(!quiet()&&due('period')){let m='';if(L&&S.lz!==k)m=L.d===0?'طبق پیش‌بینی امروز باید پریود بشی. شروع شد؟':'پریودت '+fa(L.d)+' روز دیر شده. شروع شد؟';else if(!L&&!I.period&&I.toNext>0&&I.toNext<=N.period.before)m='پریود تا '+fa(I.toNext)+' روز دیگه شروع می‌شه';if(m){out.push(m);S.nl.period=k}}
- if(!quiet()&&due('pms')&&I.day===I.C-6){out.push('دوره PMS شروع شد؛ به خودت مهربون باش 💜');S.nl.pms=k}
- if(!quiet()&&due('ov')&&(I.day===I.ov-5||I.day===I.ov)){out.push(I.day===I.ov?'امروز روز تخمک‌گذاریه 🌸':'بازه‌ی باروری شروع شد 🌸');S.nl.ov=k}
- if(N.med.on)medsToday().forEach(x=>{if(hm>=x.tm&&!x.done&&S.nl['m'+x.key]!==k){out.push('وقت دارو 💊 '+x.m.name+(x.m.dose?' — '+x.m.dose:'')+(x.m.note?' ('+x.m.note+')':''));S.nl['m'+x.key]=k}});
- if(due('log')&&!hasData(S.logs[k]||{})){out.push('امروز علائم و حالت رو ثبت کردی؟ 📝');S.nl.log=k}
- const w=N.water;if(w.on&&hm>=w.time&&h<=21&&(h-(+w.time.slice(0,2)))%w.every===0&&S.nl.water!==k+'-'+h){const g=S.goal||8,c=(S.logs[k]||{}).water||0;if(c<g){out.push('یه لیوان آب بخور 💧 ('+fa(c)+' از '+fa(g)+')');S.nl.water=k+'-'+h}}
+ if(S.sp)spRem(out,I,N,k,due);if(!S.sp&&!quiet()&&due('period')){let m='';if(L&&S.lz!==k)m=L.d===0?'طبق پیش‌بینی امروز باید پریود بشی. شروع شد؟':'پریودت '+fa(L.d)+' روز دیر شده. شروع شد؟';else if(!L&&!I.period&&I.toNext>0&&I.toNext<=N.period.before)m='پریود تا '+fa(I.toNext)+' روز دیگه شروع می‌شه';if(m){out.push(m);S.nl.period=k}}
+ if(!S.sp&&!quiet()&&due('pms')&&I.day===I.C-6){out.push('دوره PMS شروع شد؛ به خودت مهربون باش 💜');S.nl.pms=k}
+ if(!S.sp&&!quiet()&&due('ov')&&(I.day===I.ov-5||I.day===I.ov)){out.push(I.day===I.ov?'امروز روز تخمک‌گذاریه 🌸':'بازه‌ی باروری شروع شد 🌸');S.nl.ov=k}
+ if(!S.sp&&N.med.on)medsToday().forEach(x=>{if(hm>=x.tm&&!x.done&&S.nl['m'+x.key]!==k){out.push('وقت دارو 💊 '+x.m.name+(x.m.dose?' — '+x.m.dose:'')+(x.m.note?' ('+x.m.note+')':''));S.nl['m'+x.key]=k}});
+ if(!S.sp&&due('log')&&!hasData(S.logs[k]||{})){out.push('امروز علائم و حالت رو ثبت کردی؟ 📝');S.nl.log=k}
+ const w=N.water;if(!S.sp&&w.on&&hm>=w.time&&h<=21&&(h-(+w.time.slice(0,2)))%w.every===0&&S.nl.water!==k+'-'+h){const g=S.goal||8,c=(S.logs[k]||{}).water||0;if(c<g){out.push('یه لیوان آب بخور 💧 ('+fa(c)+' از '+fa(g)+')');S.nl.water=k+'-'+h}}
  try{const hy=S.hy;if(hy&&hy.on&&hy.last&&I.period){const t=hy.t||'pad',lim=HYL[t],el=(Date.now()-hy.last)/36e5,kk=k+'-'+Math.floor(el/lim);if(el>=lim&&S.nl.hy!==kk){out.push(HYM[t]);S.nl.hy=kk}}}catch(e){}
  try{const n=bmNext();if(n&&hm>='09:00'&&S.nl.bm!==k&&n.left<=1&&n.left>=-30){out.push(BMM[n.t]);S.nl.bm=k}}catch(e){}
  if(out.length){save();out.forEach(m=>{if(!notify(tx('ماه قاسی'),tx(m)))toast(m)})}}
@@ -2377,7 +2377,7 @@ function bmDraw(hd,bk){const b=bbS(),a=bbAge(),td=iso(today());
  return h+bk}
 
 /* ===== mod7: settings additions ===== */
-const APPV='v100';try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.t==='upd'&&!document.getElementById('b3root')&&!sessionStorage.getItem('rl94')){sessionStorage.setItem('rl94','1');location.reload()}})}catch(e){}
+const APPV='v101';try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.t==='upd'&&!document.getElementById('b3root')&&!sessionStorage.getItem('rl94')){sessionStorage.setItem('rl94','1');location.reload()}})}catch(e){}
 const TGP=['pw','pts','sup','bms','vt','fd','px','kick','ctr','br','hb','sh','nm'],TGB=['mch','bf','dp','bb','bm','snd'];
 function toolList(){let L=TOOLS.slice();const o=S.tm&&S.tm.order;
  if(o&&o.length){const ix=id=>{const i=o.indexOf(id);return i<0?999:i};return L.map((x,i)=>[x,i]).sort((a,b)=>(ix(a[0][0])-ix(b[0][0]))||(a[1]-b[1])).map(z=>z[0])}
@@ -3548,18 +3548,7 @@ document.addEventListener('input',e=>{if(e.target.id!=='tq')return;const q=e.tar
 
 /* spouse mode */
 function spActive(){return !!S.sp}
-function spouseCard(){const I=info(),pl=S.period||5;let t,i='🤝';
- if(S.mode==='preg'){t='همسرت باردار است. کمک در کارهای سنگین، همراهی در ویزیت‌ها، صبوری با تغییرات خلق و تهیه‌ی غذای سالم بیشترین کمک را می‌کند. مقاله‌ها و ابزارهای بارداری برای شما هم مفیدند.'}
- else if(S.mode==='baby'){t='دوران نوزاد خسته‌کننده است. نوبتی بیدار ماندن شب، کمک در کارهای خانه و پرسیدن «حالت چطوره؟» مهم‌تر از هر هدیه‌ای است. اگر همسرت غمگین یا بی‌حوصله‌ی طولانی است، با پزشک مشورت کنید.'}
- else if(S.mode==='meno'){t='تغییرات این دوران (گرگرفتگی، خواب بد، نوسان خلق) طبیعی است. صبور باشید، محیط خنک و آرام فراهم کنید و در صورت نیاز او را به پزشک همراهی کنید.'}
- else if(I.day<=pl){t='همسرت احتمالاً در روزهای پریود است. دل‌درد و خستگی شایع است؛ کمک در کارها، نوشیدنی گرم و کمی صبوری کمک می‌کند.'}
- else if(I.pms){t='نزدیک پریود است و ممکن است حساس‌تر یا خسته‌تر باشد. قضاوت نکنید، گوش بدهید و فشار اضافه نیاورید.'}
- else if(I.fertile){t='این روزها در پنجره‌ی باروری است. اگر قصد بارداری دارید زمان مهمی است؛ اگر ندارید روش پیشگیری را فراموش نکنید.'}
- else{t='فاز عادی چرخه است و انرژی معمولاً خوب است؛ فرصت خوبی برای برنامه‌ی دو نفره.'}
- return`<div class="card"><h3>${i} ${oL('حالت همسر','Partner mode')}</h3><div class="mu" style="line-height:1.9">${t}</div>${S.mode==='preg'||S.mode==='baby'||S.mode==='meno'?'':`<div class="mu" style="margin-top:6px">${oL('پریود بعدی','Next period')}: <b>${jf(I.next,{day:'numeric',month:'long'})}</b></div>`}<div class="mu" style="font-size:12px;margin-top:6px">این اطلاعات عمومی است و جای مشورت پزشکی را نمی‌گیرد.</div></div>`}
 function spTabs(){return TABS.filter(t=>['home','not','set'].includes(t[0])).concat([['tl','🧰','ابزار']]).sort((a,b)=>['home','tl','not','set'].indexOf(a[0])-['home','tl','not','set'].indexOf(b[0]))}
-function spSetCard(){return`<div class="card"><h3>🎛 ${oL('حالت همسر','Partner mode')}</h3><div class="mu">اگه این برنامه رو همسر یا یکی از اطرافیان بانو استفاده می‌کنه، این حالت تب‌های شخصی (ثبت علائم، PMS و سلامت) رو پنهان می‌کنه و فقط خانه، ابزارها، اعلان‌ها و تنظیمات رو نشون می‌ده.</div><button class="btn ${S.sp?'o':''}" style="width:100%;margin-top:8px" data-a="spt">${S.sp?'خاموش کردن حالت همسر':'روشن کردن حالت همسر'}</button></div>`}
-
 /* backup + privacy cards */
 function bkSetCard(){const L=S.lbk;return`<div class="card" style="border:1.5px solid var(--pk)"><h3>🛟 ${oL('پشتیبان‌گیری از اطلاعات','Backup your data')}</h3><div class="mu" style="line-height:1.9">اطلاعاتت فقط روی همین گوشی ذخیره می‌شه. اگه داده‌های مرورگر پاک بشه یا گوشی عوض کنی، بدون فایل پشتیبان از بین می‌ره.<br><b>${L?'آخرین فایل پشتیبان: '+dtf(L):'هنوز فایل پشتیبان نگرفتی.'}</b></div><button class="btn" style="width:100%;margin-top:8px" data-a="bkd">📥 دانلود فایل پشتیبان</button><div class="mu" style="font-size:12px;margin-top:6px">برای برگردوندن اطلاعات، پایین‌تر در همین تنظیمات «بازیابی» رو بزن.</div></div>`}
 function prvCard(){if(!S.pin)return`<div class="card"><h3>🔒 ${oL('رمز فریب و پاک‌سازی','Decoy PIN & wipe')}</h3><div class="mu">اول بالاتر «قفل برنامه» رو فعال کن؛ بعدش می‌تونی رمز فریب و پاک‌سازی خودکار رو تنظیم کنی.</div></div>`;
@@ -3584,6 +3573,86 @@ function tourCheck(){try{if(S.ob===false||S.tour||(S.pin&&!UL)||document.getElem
   d.querySelector('#tn').onclick=()=>{if(last){fin()}else{TOURI++;R()}};const s=d.querySelector('#ts');if(s)s.onclick=fin};
  const fin=()=>{S.tour=1;save();d.remove();TOURI=0};TOURI=0;R();document.body.appendChild(d)}catch(e){console.error(e)}}
 function tourCard(){return`<div class="card"><h3>📘 ${oL('راهنمای برنامه','App guide')}</h3><div class="mu">تور معرفی برنامه رو دوباره ببین.</div><button class="btn o" style="width:100%;margin-top:8px" data-a="tourgo">نمایش راهنما</button></div>`}
+/* ===== v100b: complete partner mode ===== */
+function spN(){return S.sp?' '+(S.spn||'همسر'):''}
+function spName(){return S.spn||'همسرت'}
+function spPhase(I){if(S.mode==='preg')return'preg';if(S.mode==='baby')return'baby';if(S.mode==='meno')return'meno';if(I.period)return'per';if(I.pms)return'pms';if(I.fertile)return'fer';if(I.day<I.ov-5)return'fol';return'lut'}
+const SPD={
+per:{t:'🩸 روزهای پریود',s:'انرژی کمتر، احتمال دل‌درد، خستگی و حساس‌بودن. ساده‌ترین کمک: بار کارها را سبک کن.',
+ do:['بپرس «چی کمکت می‌کنه؟» به جای اینکه حدس بزنی؛ هر کس نیاز متفاوتی داره.','کارهای خانه، آشپزی یا خرید را بدون اینکه بخواهد بپذیر.','کیسه‌آب‌گرم یا گرمکن برقی بده و برایش نوشیدنی گرم (دمنوش، چای کم‌کافئین) بیاور.','اجازه بده استراحت کند؛ فیلم یا سریال مورد علاقه‌اش را همراهی کن.','اگر خواست، ماساژ ملایم کمر یا پا بده.','شب‌ها محیط آرام و بدون سروصدا فراهم کن.'],
+ dont:['نگو «اینقدر حساس نباش» یا «پریودی؟»؛ این جمله‌ها فقط عصبانی‌تر می‌کند.','از درد شوخی نکن و آن را کوچک نشمار.','بحث‌ها و تصمیم‌های سنگین را اگر ضرورتی ندارد به بعد از پریود بینداز.','اصرار به ورزش سنگین یا مهمانی و بیرون رفتن نکن.'],
+ buy:['نوار بهداشتی یا تامپون (همان برند و سایز مورد علاقه‌اش؛ بپرس)','کیسه‌آب‌گرم یا گرمکن برقی','دمنوش (زنجبیل، بابونه، نعنا)','شکلات تلخ و میوه','جوراب گرم و لباس راحت','مسکنی که خودش و پزشکش تأیید کرده (خودت انتخاب نکن)']},
+pms:{t:'💜 چند روز مانده به پریود (PMS)',s:'تغییر هورمون‌ها ممکن است خلق را حساس، خسته یا زودرنج کند. این واقعی است، بهانه نیست.',
+ do:['صبور باش و بیشتر گوش بده تا نصیحت کنی.','اگر ناراحت یا عصبی بود، به خودت نگیر؛ بعد از چند روز بهتر می‌شود.','خوراکی‌های مورد علاقه‌اش را آماده کن؛ هوس شیرینی هورمونی است.','قدم‌زدن آرام یا کار سبک با هم کمک می‌کند.','کارهای او را سبک کن و انتظار اضافه نداشته باش.'],
+ dont:['بحث‌های حساس و دعوا را شروع نکن.','نگو «تو همیشه همینطوری»؛ این روزها حرف‌ها سنگین‌تر شنیده می‌شود.','قضاوتش نکن که «PMS داری».'],
+ buy:['شکلات تلخ یا خوراکی دوست‌داشتنی','میوه و میان‌وعده‌ی سالم','دمنوش آرام‌بخش','شمع معطر یا نمک حمام','گل کوچک یا یادداشت محبت‌آمیز','محصولات بهداشتی را از الان چک کن که تمام نشده باشد']},
+fol:{t:'🌱 بعد از پریود (فولیکولار)',s:'انرژی و خلق معمولاً رو به بهتر شدن است. فرصت خوبی برای برنامه‌ی دو نفره.',
+ do:['پیشنهاد پیاده‌روی، ورزش با هم یا بیرون رفتن بده.','برنامه‌های جدید و فعالیت دو نفره بچین.','اگر مهم است، تصمیم‌ها و صحبت‌های جدی را الان مطرح کن.'],
+ dont:['اگر هنوز خسته است فشار نیاور.'],
+ buy:['گل یا یک سورپرایز کوچک','بلیت سینما یا یک قرار بیرون','لباس ورزشی یا چیزی که با هم استفاده کنید']},
+fer:{t:'🌸 روزهای باروری و تخمک‌گذاری',s:'انرژی و حال‌وهوا معمولاً بالاست. این بازه برای بارداری مهم‌ترین زمان است.',
+ do:['اگر قصد بارداری دارید، این روزها بهترین زمان است؛ صحبت و برنامه‌ریزی کنید.','اگر قصد بارداری ندارید، حتماً پیشگیری مطمئن را فراموش نکنید.','یک قرار رمانتیک یا شام بیرون بگذار.'],
+ dont:['تقویم را «روش پیشگیری» حساب نکن؛ پیش‌بینی فقط تخمینی است.'],
+ buy:['کاندوم یا روش پیشگیری مورد توافق','گل یا هدیه‌ی کوچک','نوار تست تخمک‌گذاری (فقط اگر قصد بارداری دارید)','اسید فولیک (فقط پس از مشورت با پزشک برای بارداری)']},
+lut:{t:'🌙 نیمه‌ی دوم چرخه',s:'اوایل این فاز آرام است و کم‌کم به PMS نزدیک می‌شود.',
+ do:['آرام‌تر و حمایتگرتر باش.','به نشانه‌های اولیه‌ی PMS (خستگی، نفخ، حساسیت) توجه کن.','محصولات بهداشتی و خوراکی‌های دلخواه را از الان تهیه کن.'],
+ dont:['فشار کاری یا خانوادگی اضافه نیاور.'],
+ buy:['میان‌وعده‌ی سالم و شکلات','محصولات بهداشتی ذخیره','دمنوش']},
+preg:{t:'🤰 بارداری',s:'بدن او دارد خیلی کار می‌کند. حمایت عملی و عاطفی تو بیشترین تأثیر را دارد.',
+ do:['همراه او به ویزیت‌ها و سونوگرافی‌ها برو و سؤال‌ها را از قبل بنویس.','کارهای سنگین، بلند کردن وسایل و تمیزکاری با مواد تند را خودت انجام بده.','غذای سالم و وعده‌های کوچک و مکرر آماده کن (تهوع شایع است).','برای کلاس آمادگی زایمان ثبت‌نام کنید.','کیف بیمارستان، مسیر و شماره‌های مهم را از هفته‌های آخر آماده نگه دار.'],
+ dont:['به تغییر ظاهر و وزنش اشاره‌ی منفی نکن.','تصمیم‌های مهم پزشکی را بدون او نگیر.','بوهای تند (سیگار، عطر تند، غذاهای بودار) را کنار بگذار.'],
+ buy:['بالش بارداری','کرم ضدترک یا مرطوب‌کننده‌ی ملایم','لباس راحت و کفش راحت','خوراکی‌های سبک (کراکر، میوه، آجیل) برای تهوع','لباس و وسایل نوزاد (با هم انتخاب کنید)','مکمل‌هایی که فقط پزشک تجویز کرده']},
+baby:{t:'👶 بعد از زایمان و دوران نوزاد',s:'خستگی، کم‌خوابی و تغییرات هورمونی جدی است. تو شریک کامل هستی، نه «کمک‌کننده».',
+ do:['نوبتی بیدار بمان؛ مثلاً یک شیفت شب مال تو باشد.','پوشک، آروغ‌گیری، حمام و قنداق‌پیچی را خودت یاد بگیر و انجام بده.','غذا، شست‌وشو و خانه را مدیریت کن و میهمان‌ها را کم کن.','هر روز بپرس «حال خودت چطوره؟» نه فقط حال نوزاد.','به او فرصت یک دوش یا چرت یا بیرون رفتن بده.'],
+ dont:['نگو «کاری نکردی که خسته باشی».','از بقیه‌ی مادرها با او مقایسه نکن.','او را برای شیردهی یا گریه‌ی نوزاد سرزنش نکن.'],
+ buy:['غذای آماده‌ی سالم و میوه','لباس راحت و باز‌شونده‌ی جلو','کرم نوک پستان و محصولات مراقبت (مطابق نظر ماما/پزشک)','بالش شیردهی','پوشک و مرطوب‌کننده‌ی کافی']},
+meno:{t:'🌿 دوران یائسگی',s:'گرگرفتگی، خواب بد و نوسان خلق شایع است و ارادی نیست.',
+ do:['محیط را خنک و تهویه‌دار نگه دار.','برای ورزش سبک و پیاده‌روی همراهی کن.','اگر علائم زندگی‌اش را مختل کرده، او را به مشاوره با پزشک تشویق کن و همراهش برو.','صبور باش و شنونده باش.'],
+ dont:['او را «پیر شدی» خطاب نکن یا علائم را شوخی نگیر.'],
+ buy:['لباس نخی و لایه‌ای','پنکه‌ی کوچک یا بالش خنک','دمنوش آرام‌بخش','مکمل کلسیم و ویتامین D فقط با نظر پزشک']}
+};
+const SPM=[['شروع پریود','سلام عزیزم، می‌دونم این روزها شاید سخت باشه. چیزی هست که بتونم برات انجام بدم؟ 💗'],['شام','امشب شام با من؛ تو فقط استراحت کن.'],['خرید','سر راه چیزی بخرم برات؟ شکلات، دمنوش، یا چیز دیگه‌ای؟'],['PMS','اگه امروز حوصله نداری مشکلی نیست؛ من کنارتم و هیچ فشاری نیست.'],['حمایت','هر حالی که داری، دوستت دارم و کنارتم 💜'],['درد','دردت بهتر شده؟ کیسه‌آب‌گرم آماده‌ست، بگو برات بیارم.']];
+const SPG=[['کم‌هزینه','گل کوچک، شکلات تلخ، دمنوش خوب، یادداشت دست‌نویس، کیسه‌آب‌گرم، پخت غذای مورد علاقه‌اش'],['متوسط','پیژامه یا لباس راحت، عطر یا کرم مورد علاقه، کتاب، ماساژور، بسته‌ی اسپا و آرامش، شام بیرون'],['ویژه','سفر کوتاه، جواهر یا زیورآلات، روز کامل «بدون کار خانه»، تجربه‌ی دو نفره (کنسرت، کلاس)']];
+const SPQ=[['چطور از دل‌درد پریود کمکش کنم؟','گرمای روی شکم و کمر (کیسه‌آب‌گرم)، دراز کشیدن با زانوی خم‌شده، دوش آب گرم، نوشیدنی گرم، ماساژ ملایم کمر و حرکت‌های سبک مثل قدم‌زدن کمک می‌کند. دارو را فقط خودش و پزشک تعیین کنند.'],
+['کِی باید نگران باشیم و به پزشک برویم؟','اگر درد آن‌قدر شدید است که نمی‌تواند کار کند یا غش می‌کند، خونریزی بسیار زیاد است (هر یکی دو ساعت پد پر می‌شود)، تب با درد دارد، پریودها بیش از ۳ ماه نیامده (بدون بارداری)، یا درد ناگهانی و شدید یک‌طرفه دارد، به پزشک مراجعه کنید. اگر احتمال بارداری هست و درد یا خونریزی شدید دارد، فوری به اورژانس (۱۱۵) مراجعه کنید.'],
+['PMS واقعی است یا بهانه؟','واقعی است. تغییر سطح هورمون‌ها روی خلق، خواب، اشتها و تحمل استرس اثر می‌گذارد. این رفتار ارادی نیست و معمولاً با شروع پریود بهتر می‌شود. اگر خیلی شدید است (افسردگی، افکار آسیب به خود)، مشاوره‌ی پزشکی لازم است.'],
+['آیا در پریود ورزش و حمام ایرادی دارد؟','نه. ورزش سبک و دوش آب گرم معمولاً کمک می‌کند. خودش تصمیم می‌گیرد که چه چیزی راحت‌تر است.'],
+['چرا هوس شیرینی می‌کند؟','تغییر هورمون‌ها و سروتونین اشتها را بالا می‌برد. شکلات تلخ، میوه و آجیل انتخاب بهتری از شیرینی‌های زیاد است.'],
+['رابطه‌ی جنسی در پریود چطور است؟','کاملاً انتخاب شخصی و با رضایت هر دو است. بعضی‌ها راحت‌ترند و بعضی نه. بارداری در پریود کم‌احتمال است ولی غیرممکن نیست؛ اگر نمی‌خواهید باردار شود، پیشگیری را ادامه دهید.'],
+['پریود نامنظم یعنی بیماری؟','همیشه نه. استرس، کم‌خوابی، تغییر وزن و ورزش زیاد اثر دارند. اما اگر مدام نامنظم است یا چند ماه نیامده، حتماً پزشک ببیند (مثلاً PCOS، تیروئید).'],
+['چطور بدون اینکه ناراحتش کنم بپرسم حالش چطور است؟','ساده و بدون قضاوت: «امروز حالت چطوره؟ می‌خوای چه کمکی بکنم؟». به جای «پریودی؟» از نتیجه‌ی مشاهده‌ات بگو: «خسته به نظر می‌رسی، بذار من شام رو درست کنم».']];
+function spUp(n){const I=info(),C=S.cycle,P=S.period,o=[];for(let i=0;i<n;i++){const s=add(I.next,i*C);o.push({p:s,pms:add(s,-7),ov:add(s,-15)})}return o}
+function spHome(){const I=info(),L=lateInfo(),ph=spPhase(I),D=SPD[ph],nm=spName(),qu=['preg','baby','meno'].includes(ph);
+ let big,sub;
+ if(S.mode==='preg'){const d=Math.round((today()-parse(S.start))/DAY),w=Math.max(0,Math.floor(d/7));big='هفته '+fa(w);sub='تاریخ تقریبی زایمان: '+jf(add(parse(S.start),280),{day:'numeric',month:'long',year:'numeric'})}
+ else if(qu){big=D.t;sub=''}
+ else if(I.period){big='روز '+fa(I.day)+' پریود';sub='طبق پیش‌بینی، پریود تا حدود '+fa(Math.max(0,S.period-I.day))+' روز دیگر ادامه دارد'}
+ else if(L&&L.d>=0&&L.d<=40&&I.toNext>S.cycle-3){big=L.d===0?'امروز پریود است':fa(L.d)+' روز تأخیر';sub='طبق پیش‌بینی باید شروع شده باشد؛ اگر شروع شد، در «ثبت شروع پریود» ثبتش کنید'}
+ else{big=fa(I.toNext)+' روز مانده';sub='به پریود '+nm+' · '+jf(I.next,{weekday:'long',day:'numeric',month:'long'})}
+ const up=spUp(3);
+ let h=`<div class="card" style="text-align:center;background:linear-gradient(135deg,var(--pk),#a855f7);color:#fff;border:none"><div style="opacity:.9;font-size:13px">${oL('حالت همسر','Partner mode')} · ${esc(nm)}</div><div style="font-size:34px;font-weight:800;margin:6px 0">${big}</div><div style="opacity:.95;font-size:13px;line-height:1.8">${sub}</div></div>`;
+ if(!S.spn)h+=`<div class="card"><h3>✏️ اسم همسرت</h3><div class="mu">اسم یا لقبش را بنویس تا پیام‌ها و اعلان‌ها شخصی شوند.</div><input id="spn" placeholder="مثلاً مریم" style="margin-top:8px;width:100%;box-sizing:border-box"></div>`;
+ h+=`<div class="card"><h3>${D.t}</h3><div class="mu" style="line-height:1.9">${D.s}</div>
+ <div style="margin-top:10px"><b>✅ چیکار کنم</b><ul class="spl">${D.do.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+ <div><b>🚫 چیکار نکنم</b><ul class="spl">${D.dont.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+ <div><b>🛍️ چی بخرم</b><div class="chips" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${D.buy.map(x=>`<button class="chip" data-a="splp" data-v="${esc(x)}">＋ ${x}</button>`).join('')}</div></div><div class="mu" style="font-size:12px;margin-top:8px">با زدن هر مورد به «لیست خرید من» اضافه می‌شود.</div></div>`;
+ const SL=S.spl||[];
+ h+=`<div class="card"><h3>🛒 ${oL('لیست خرید من','My shopping list')}</h3>${SL.length?SL.map((x,i)=>`<div class="note" style="margin:0 0 6px;align-items:center"><span class="ic" data-a="splt" data-v="${i}" style="cursor:pointer">${x.d?'✅':'⬜'}</span><div style="flex:1;${x.d?'text-decoration:line-through;opacity:.6':''}">${esc(x.t)}</div><button class="chip" data-a="spld" data-v="${i}" aria-label="حذف">✕</button></div>`).join(''):'<div class="mu">هنوز چیزی نیست. از کارت بالا اضافه کن یا خودت بنویس.</div>'}<div class="row" style="margin-top:8px"><input id="splin" placeholder="چیز دیگری…" style="flex:1"><button class="btn" data-a="spla">افزودن</button></div></div>`;
+ h+=`<div class="card"><h3>💬 ${oL('پیام آماده','Ready messages')}</h3><div class="mu">برای کپی یا ارسال بزن و برایش بفرست.</div>${SPM.map((m,i)=>`<div class="note" style="margin:8px 0 0;align-items:center;cursor:pointer" data-a="spc" data-v="${i}"><span class="ic">📋</span><div style="flex:1"><b>${m[0]}</b><div class="mu">${m[1]}</div></div></div>`).join('')}</div>`;
+ if(!qu)h+=`<div class="card"><h3>📅 ${oL('پریودهای بعدی','Upcoming periods')}</h3>${up.map((u,i)=>`<div class="note" style="margin:0 0 6px"><span class="ic">🩸</span><div style="flex:1"><b>${jf(u.p,{weekday:'long',day:'numeric',month:'long'})}</b><div class="mu">شروع PMS: ${jf(u.pms,{day:'numeric',month:'long'})} · تخمک‌گذاری: ${jf(u.ov,{day:'numeric',month:'long'})}</div></div></div>`).join('')}<button class="btn o" style="width:100%;margin-top:6px" data-a="ics">📅 افزودن به تقویم گوشی (هشدار واقعی)</button></div>`;
+ h+=`<div class="card"><h3>🎁 ${oL('ایده‌ی هدیه','Gift ideas')}</h3>${SPG.map(g=>`<div style="margin-top:8px"><b>${g[0]}</b><div class="mu" style="line-height:1.9">${g[1]}</div></div>`).join('')}</div>`;
+ h+=`<div class="card"><h3>❓ ${oL('راهنمای شناخت و سؤال‌های رایج','Guide & FAQ')}</h3>${SPQ.map(q=>`<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:600">${q[0]}</summary><div class="mu" style="line-height:1.9;margin-top:6px">${q[1]}</div></details>`).join('')}<div class="mu" style="font-size:12px;margin-top:10px">این مطالب عمومی است و جای مشورت پزشکی را نمی‌گیرد.</div></div>`;
+ return h}
+function spNtCard(){const N=ntInit(),row=(t,tx,ex)=>`<div class="note" style="margin-top:8px;align-items:center;flex-wrap:wrap"><span class="ic">${NL[t][0]}</span><div style="flex:1;min-width:130px"><b>${tx}</b>${ex||''}</div><input type="time" id="nt-${t}-time" value="${N[t].time}" style="width:auto"><button class="chip ${N[t].on?'on':''}" data-a="nz" data-v="${t}">${N[t].on?'روشن':'خاموش'}</button></div>`,sel=`<select id="nt-period-before" style="width:auto;padding:6px">${[1,2,3,4,5,6,7].map(x=>`<option value="${x}" ${x==N.period.before?'selected':''}>${fa(x)}</option>`).join('')}</select>`;
+ const on='Notification' in window&&Notification.permission==='granted';
+ return`<div class="card"><h3>🔔 ${oL('یادآوری برای من','Reminders for me')}</h3><div class="mu" style="line-height:1.9">این‌ها فقط وقتی برنامه باز یا در پس‌زمینه است کار می‌کنند. برای هشدار مطمئن حتی با برنامه‌ی بسته، «افزودن به تقویم گوشی» را از خانه یا پایین همین صفحه بزن.</div>${on?'':`<button class="btn" style="width:100%;margin-top:8px" data-a="ne">فعال کردن اعلان</button>`}${row('period','هشدار نزدیک شدن پریود','<div style="font-size:12px;color:var(--mu)">چند روز قبل: '+sel+'</div>')}${row('pms','شروع PMS (صبوری لازم است)')}${row('ov','روزهای باروری (اگر لازم است)')}</div>`}
+function spNoticeTab(){return spNtCard()+icsCard()}
+function spRem(out,I,N,k,due){const nm=spName();
+ if(due('period')){let m='';const L=lateInfo();if(L&&S.lz!==k&&L.d>=0&&L.d<=7)m=(L.d===0?'طبق پیش‌بینی امروز پریود '+nm+' شروع می‌شود':'پریود '+nm+' '+fa(L.d)+' روز دیر شده')+'؛ حواست باشد 💗';else if(!I.period&&I.toNext>0&&I.toNext<=N.period.before)m='پریود '+nm+' تا '+fa(I.toNext)+' روز دیگر شروع می‌شود؛ وقتشه چیزهای لازم رو تهیه کنی 🛍️';else if(I.day===1)m='امروز احتمالاً روز اول پریود '+nm+' است؛ یه سر بهش بزن 💗';if(m){out.push(m);S.nl.period=k}}
+ if(due('pms')&&I.day===I.C-6){out.push(nm+' وارد دوره‌ی PMS شده؛ صبورتر و مهربان‌تر باش 💜');S.nl.pms=k}
+ if(due('ov')&&(I.day===I.ov-5||I.day===I.ov)){out.push(I.day===I.ov?'امروز روز تخمک‌گذاری '+nm+' است':'بازه‌ی باروری '+nm+' شروع شد');S.nl.ov=k}}
+function spSetCard(){return`<div class="card"><h3>🎛 ${oL('حالت همسر','Partner mode')}</h3><div class="mu" style="line-height:1.9">اگه این برنامه رو همسر یا پارتنر بانو نصب کرده تا یادش نره پریود کی میاد، این حالت رو روشن کن. تب‌های شخصی (ثبت علائم، PMS و سلامت) پنهان می‌شن و به‌جاشون شمارش معکوس، توصیه‌ی «چیکار کنم / چی بخرم»، لیست خرید، پیام آماده و اعلان مخصوص همسر دیده می‌شه. تاریخ آخرین پریود و طول چرخه رو از «تنظیمات چرخه» وارد کن.</div><input id="spn" value="${esc(S.spn||'')}" placeholder="اسم همسر (اختیاری)" style="margin-top:8px;width:100%;box-sizing:border-box"><button class="btn ${S.sp?'o':''}" style="width:100%;margin-top:8px" data-a="spt">${S.sp?'خاموش کردن حالت همسر':'روشن کردن حالت همسر'}</button></div>`}
+document.addEventListener('change',e=>{if(e.target.id==='spn'){S.spn=e.target.value.trim();save();if(S.sp)draw()}});
 
 /* ===== mod16 v2: bowling (pseudo-3D, cinematic camera, bowler, ball return, themes, real scoring) ===== */
 const BWT=[
@@ -4222,7 +4291,7 @@ function draw0(){
  const f=document.activeElement;if(f&&f.id==='nt'){S._n=f.value}
  if(!XV&&XS.on){xvStop(true);XS.on=0}clearTimeout(breathT);if(S.pin&&!UL){lockDraw();return}if(S.ob===false){obDraw();abAfterOb();return}if(QV){quizDraw();return}if(SV){srDraw();return}if(TV){trDraw();return}if(XV){xvDraw();return}if(GV){guideDraw();return}if(DV){dietDraw();return}if(RV){reportDraw();return}if(AV){artDraw();return}if(PV){pvDraw();return}
  if(S.sm&&(tab==='hl'||tab==='pms'||tab==='tl'))tab='home';if(S.sp&&(tab==='hl'||tab==='pms'||tab==='log'))tab='home';
- const body={home,log:logTab,pms:pmsTab,tl:toolsTab,not:noticeTab,hl:healthTab,set:()=>reorderCards(bkSetCard()+spSetCard()+setTab()+setExtra()+prvCard()+tourCard(),['🛟','🌐','⚙','🌸','📅','🎛','🌍','📏','🔔','🔒','🛡','📄','📤','💾','🧹','⚠'])}[tab]();
+ const body={home,log:logTab,pms:pmsTab,tl:toolsTab,not:()=>S.sp?spNoticeTab():noticeTab(),hl:healthTab,set:()=>reorderCards(bkSetCard()+spSetCard()+setTab()+setExtra()+prvCard()+tourCard(),['🛟','🌐','⚙','🌸','📅','🎛','🌍','📏','🔔','🔒','🛡','📄','📤','💾','🧹','⚠'])}[tab]();
  $('#app').innerHTML=`<header><img class="logo" src="${ICON}" alt=""><div><b>ماه قاسی</b>${S.prof.name?'<small style="display:block;color:var(--tx);font-weight:600;font-size:13px">'+esc(S.prof.name)+'، خوش اومدی 💗</small>':''}<small>${jf(today(),{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small></div><div style="margin-inline-start:auto;display:flex;gap:5px"><button class="th" style="margin:0" data-a="ss" aria-label="جستجو">🔍</button><button class="th" style="margin:0" data-a="tlb" aria-label="ابزار" style="margin:0;background:var(--pk);color:#fff">🧰</button><button class="th" style="margin:0;font-size:13px;font-weight:700;direction:ltr" data-a="lg" aria-label="Language">${S.lang==='en'?'🌐 FA':'🌐 EN'}</button><button class="th" style="margin:0" data-a="th" aria-label="تغییر تم">🌓</button></div></header>${storeOK?'':'<div class="note"><span class="ic">⚠️</span><div><b>ذخیره‌سازی در دسترس نیست</b><div>اطلاعات با بستن برنامه پاک می‌شه. از تنظیمات «خروجی گرفتن» رو بزن و متنش رو جایی نگه دار.</div></div></div>'}${abBanner()}${body}${footer()}`;
  $('#nav').innerHTML=(S.sp?spTabs():S.sm?TABS.filter(t=>['home','log','not','set'].includes(t[0])):TABS).map(t=>`<button class="${(tab===t[0]||false)?'on':''}" data-t="${t[0]}"><span>${t[1]}</span>${t[2]}</button>`).join('');
 }
@@ -4275,6 +4344,11 @@ document.addEventListener('click',e=>{
  else if(a==='dpd'){S.dpin='';toast('رمز فریب حذف شد')}
  else if(a==='paw'){S.aw=+b.dataset.v;S.pf=0;toast(S.aw?'پاک‌سازی بعد از '+fa(S.aw)+' رمز اشتباه فعال شد':'پاک‌سازی خاموش شد')}
  else if(a==='tourgo'){S.tour=0}
+ else if(a==='splp'){S.spl=S.spl||[];const t=b.dataset.v;if(!S.spl.some(x=>x.t===t))S.spl.push({t,d:0});toast('به لیست اضافه شد');save();return}
+ else if(a==='spla'){const v=(($('#splin')||{}).value||'').trim();if(!v)return;S.spl=S.spl||[];S.spl.push({t:v,d:0})}
+ else if(a==='splt'){const x=(S.spl||[])[+b.dataset.v];if(x)x.d=x.d?0:1}
+ else if(a==='spld'){(S.spl||[]).splice(+b.dataset.v,1)}
+ else if(a==='spc'){const t=SPM[+b.dataset.v][1];try{if(navigator.share){navigator.share({text:t}).catch(()=>{})}else{navigator.clipboard.writeText(t);toast('کپی شد')}}catch(x){toast('کپی نشد')}return}
  else if(a==='lf'){if(confirm('برای باز کردن قفل، همه‌ی اطلاعات برنامه پاک می‌شه. ادامه می‌دی؟')){try{localStorage.removeItem('mahbanoo')}catch(x){}location.reload()}return}
  else if(a==='lp'){S.start=iso(add(today(),-(+b.dataset.v)));addHist(S.start);toast('شروع پریود ثبت شد')}
  else if(a==='lpd'){const v=$('#lpd').value;if(!v){toast('اول تاریخ رو انتخاب کن');return}S.start=v;addHist(v);toast('شروع پریود ثبت شد')}
