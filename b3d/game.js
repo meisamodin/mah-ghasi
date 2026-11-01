@@ -28,9 +28,9 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  // ------------ renderer ------------
  const o=o0();let QL=o.b3v===2&&o.b3q!==undefined?o.b3q:1;
  let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:QL<1,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.test})}catch(e){root.remove();if(W_.toast)W_.toast(oL('مرورگر WebGL را پشتیبانی نمی‌کند','WebGL is not supported'));return null}
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;renderer.outputColorSpace=THREE.SRGBColorSpace;
  let scene,E,pins,ball,bowlers=[],cam,composer,bloom,artCv,artCx,artT=0,artS,pcount=0;
- const dprOf=q=>q>=2?2:q>=1?1.6:1.1;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
+ const dprOf=q=>q>=2?2.5:q>=1?2:1.25;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
  function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?58:44;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
  // ------------ scene ------------
  function build(){if(scene){scene.traverse(x=>{if(x.geometry)x.geometry.dispose&&x.geometry.dispose()})}scene=new THREE.Scene();const ti=o0().bt||0;artCv=document.createElement('canvas');artCv.width=1024;artCv.height=384;artCx=artCv.getContext('2d');artS={stars:Array.from({length:46},()=>[Math.random(),Math.random(),rnd(.8,2),rnd(1,3)]),f:0,k:0};
@@ -41,7 +41,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   // bumpers
   E.bump=[-1,1].map(sd=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.05,.09,P.PZ0*-1+3.5),new THREE.MeshPhysicalMaterial({color:E.th.acc,roughness:.3,clearcoat:.6}));m.position.set(sd*(P.HW+.02),.045,-8.3);m.castShadow=true;scene.add(m);return m});
   buildGauge();
-  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:THREE.HalfFloatType,samples:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w,h),QL>=2?.3:.2,.5,.95);composer.addPass(bloom);composer.addPass(new OutputPass())}
+  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:THREE.HalfFloatType,samples:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w,h),QL>=2?.12:.08,.35,1.15);composer.addPass(bloom);composer.addPass(new OutputPass())}
   resize();parts()}
  function shirtFor(ti){const c=(W_.BWT&&W_.BWT[ti])?W_.BWT[ti].shirt:['#c0392b','#8e2a20'];return{shirt:new THREE.Color(c[0]).getHex(),shirt2:new THREE.Color(c[1]).getHex(),num:7}}
  function ballCols(){const b=W_.BWBALLS&&W_.BWBALLS[o0().bbc||0],th=W_.BWT&&W_.BWT[o0().bt||0];if(b&&b.c)return[b.c,b.pat];return[th?th.ball:['#7db7ff','#17358a','#bcd8ff'],'']}
@@ -77,7 +77,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   const bar=new THREE.Group();const track=new THREE.Mesh(new THREE.BoxGeometry(P.HW*2,.012,.07),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.18,depthWrite:false}));bar.add(track);
   const sweet=new THREE.Mesh(new THREE.BoxGeometry(.1,.016,.075),new THREE.MeshBasicMaterial({color:0x7ee787,transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending}));bar.add(sweet);
   const mk=new THREE.Mesh(new THREE.ConeGeometry(.05,.14,4),new THREE.MeshBasicMaterial({color:0xffffff,blending:THREE.AdditiveBlending}));mk.position.y=.09;mk.rotation.x=Math.PI;bar.add(mk);bar.position.set(0,.02,-2.4);bar.visible=false;scene.add(bar);
-  GA={g,segs,lab,cv,cx,tex,rib,ring,disc,bar,mk,sweet,pow:0,acc:0,hold:0,lastTxt:''}}
+  GA={ang:0,g,segs,lab,cv,cx,tex,rib,ring,disc,bar,mk,sweet,pow:0,acc:0,hold:0,lastTxt:''}}
  function drawLab(pow,acc){const c=GA.cx;c.clearRect(0,0,256,84);c.fillStyle='rgba(8,6,24,.8)';c.fillRect(0,0,256,84);c.strokeStyle='rgba(255,255,255,.5)';c.strokeRect(1,1,254,82);c.fillStyle='#fff';c.font='bold 22px Tahoma';c.textAlign='center';c.fillText(oL('قدرت','POWER')+' '+Math.round(pow*100)+'%',128,32);c.fillStyle=acc>.75?'#7ee787':acc>.45?'#ffd24a':'#ff7a7a';c.fillText(oL('دقت','ACCURACY')+' '+Math.round(acc*100)+'%',128,64);GA.tex.needsUpdate=true}
  function liveInfo(){const d=G.drag;if(!d||d.pts.length<3)return null;const A_=d.pts,e=A_[A_.length-1];let i=A_.length-1;while(i>0&&e.t-A_[i-1].t<150)i--;const a=A_[i],dt=Math.max(16,e.t-a.t)/1000,dy=a.y-e.y,dx=e.x-a.x;if(dy<6)return{pow:G.pull*.3,ang:0,live:false};const sp=dy/dt,k=cl((sp-140)/1700,0,1);return{pow:k,ang:cl(dx/dy,-.6,.6),live:true}}
  function updGauge(dt){if(!GA)return;const o=o0(),aiming=G.st==='aim'&&!(G.vs&&G.turn===1)||G.st==='throw'&&G.tp&&!(G.vs&&G.turn===1);
@@ -178,7 +178,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   G.t+=dtr;const o=o0();let dt=dtr;if(G.slow>0){G.slow-=dtr;dt=dtr*.3}
   // art screen
   artT+=dtr;if(artT>.12&&W_.bwArt&&W_.BWT){artT=0;const A_=G.P?G.P[G.turn]:{f:0,k:0};artS.f=A_.f;artS.k=A_.k;artCx.save();artCx.clearRect(0,0,1024,384);try{W_.bwArt(artCx,T,W_.BWT[o.bt||0],0,0,1024,384,artS)}catch(e){}artCx.restore();E.artTex.needsUpdate=true}
-  E.cones.forEach((c,i)=>c.material.opacity=(i<4?.14:.1)*(.85+.15*Math.sin(T*1.3+i)));
+  E.cones.forEach((c,i)=>c.material.opacity=(i<4?.07:.05)*(.85+.15*Math.sin(T*1.3+i)));
   if(E.dustP){for(let i=0;i<E.dustP.length;i+=3){E.dustP[i+1]+=Math.sin(T*.3+i)*.0006;E.dustP[i]+=Math.sin(T*.2+i*1.7)*.0004}E.dust.geometry.attributes.position.needsUpdate=true}
   const b=bowlers[G.turn],J=b.userData.J;
   if(G.st==='walk'){const d=G.walkDur,k=cl(G.t/d,0,1);const p1=.18,p2=.4;

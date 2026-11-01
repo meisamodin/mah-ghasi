@@ -55,7 +55,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
  // lights
  const hemi=new THREE.HemisphereLight(th.key,th.floor,.55);scene.add(hemi);
  const key=new THREE.SpotLight(th.key,260,40,.62,.55,1.6);key.position.set(.4,4.3,-8);key.target.position.set(0,0,-9);key.castShadow=true;const ss=q>=2?2048:q>=1?1024:512;key.shadow.mapSize.set(ss,ss);key.shadow.bias=-.0004;key.shadow.normalBias=.02;key.shadow.camera.near=2;key.shadow.camera.far=30;scene.add(key,key.target);E.key=key;
- const deck=new THREE.SpotLight(0xffffff,85,14,.5,.7,1.5);deck.position.set(0,3.6,-16.2);deck.target.position.set(0,0,-18.3);scene.add(deck,deck.target);E.deck=deck;
+ const deck=new THREE.SpotLight(0xffffff,55,14,.5,.7,1.5);deck.position.set(0,3.6,-16.2);deck.target.position.set(0,0,-18.3);scene.add(deck,deck.target);E.deck=deck;
  const app=new THREE.SpotLight(th.key,120,10,.9,.8,1.6);app.position.set(0,3.8,2.6);app.target.position.set(0,0,.5);scene.add(app,app.target);E.app=app;
  const fillL=new THREE.PointLight(th.acc,14,20,1.6);fillL.position.set(-3,1.3,-8);scene.add(fillL);const fillR=new THREE.PointLight(th.acc2,14,20,1.6);fillR.position.set(3,1.3,-8);scene.add(fillR);E.fillL=fillL;E.fillR=fillR;
  // floor
@@ -77,7 +77,7 @@ export function buildEnv(scene,renderer,ti,q,artCanvas){const th=TH[ti]||TH[0],E
  // neighbor lanes (instanced pins + plane copies)
  const nm=new THREE.MeshPhysicalMaterial({map:laneTex,roughness:.25,clearcoat:.8,clearcoatRoughness:.1,envMapIntensity:1.1,color:0xbbbbbb});
  const pinG=pinGeometry();E.pinG=pinG;
- const pinM=new THREE.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,roughness:.22,clearcoat:1,clearcoatRoughness:.08,envMapIntensity:1.2});E.pinM=pinM;
+ const pinM=new THREE.MeshPhysicalMaterial({color:0xe6e1d6,vertexColors:true,roughness:.3,clearcoat:.8,clearcoatRoughness:.12,envMapIntensity:.7});E.pinM=pinM;
  [-3.6,-1.8,1.8,3.6].forEach(cx=>{const ln=new THREE.Mesh(new THREE.PlaneGeometry(1.053,LL),nm);ln.rotation.x=-Math.PI/2;ln.position.set(cx,0,4-LL/2);ln.receiveShadow=true;scene.add(ln);scene.add(laneSet(cx,false));
   const im=new THREE.InstancedMesh(pinG,pinM,10);let i=0;const m4=new THREE.Matrix4();for(let r=0;r<4;r++)for(let k=0;k<=r;k++){m4.makeTranslation(cx+(k-r/2)*.305,0,PZ0-r*.264);im.setMatrixAt(i++,m4)}im.castShadow=true;scene.add(im);
   // ball return / bridge lights over neighbors
