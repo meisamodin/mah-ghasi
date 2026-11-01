@@ -3,9 +3,9 @@ import {EffectComposer} from './postprocessing/EffectComposer.js';
 import {RenderPass} from './postprocessing/RenderPass.js';
 import {UnrealBloomPass} from './postprocessing/UnrealBloomPass.js';
 import {OutputPass} from './postprocessing/OutputPass.js';
-import {buildEnv,TH} from './env.js?v=87';
-import * as A from './actors.js?v=87';
-import * as P from './phys3.js?v=87';
+import {buildEnv,TH} from './env.js?v=88';
+import * as A from './actors.js?v=88';
+import * as P from './phys3.js?v=88';
 const _C={},W_=new Proxy({},{get(_,k){if(k in _C)return _C[k];let v;try{v=(0,eval)(String(k))}catch(e){v=undefined}if(v!==undefined)_C[k]=v;return v}}),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,rnd=(a,b)=>a+Math.random()*(b-a);
 const oL=(f,e)=>W_.oL?W_.oL(f,e):f,fa=n=>W_.fa?W_.fa(n):String(n);
 let CUR=null;
@@ -22,7 +22,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  const hud=document.createElement('div');hud.style.cssText='position:absolute;inset:0;pointer-events:none';root.appendChild(hud);
  hud.innerHTML=`<div id="b3sb" style="position:absolute;left:8px;right:8px;top:max(8px,env(safe-area-inset-top));background:rgba(12,10,30,.5);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:7px 7px 6px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)"></div>
  <div id="b3btn" style="position:absolute;right:8px;display:flex;gap:6px;pointer-events:auto;flex-direction:row-reverse"></div>
-<div id="b3ang" style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));width:min(88%,340px);height:60px;pointer-events:auto;touch-action:none;display:none"><svg viewBox="0 0 330 60" style="width:100%;height:100%;overflow:visible"><path d="M20 14 Q165 62 310 14" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="12" stroke-linecap="round"/><path d="M20 14 Q165 62 310 14" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 10"/><path d="M12 6 l-10 8 l10 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M318 6 l10 8 l-10 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle id="b3h" cx="165" cy="38" r="15" fill="#8dff6a" stroke="#fff" stroke-width="3.5"/></svg></div>
+<div id="b3ang" style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));width:min(88%,340px);height:60px;pointer-events:none;touch-action:none;display:none"><svg viewBox="0 0 330 60" style="width:100%;height:100%;overflow:visible"><path id="b3hit" d="M20 14 Q165 62 310 14" fill="none" stroke="rgba(0,0,0,0)" stroke-width="44" stroke-linecap="round" style="pointer-events:stroke"/><path d="M20 14 Q165 62 310 14" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="12" stroke-linecap="round"/><path d="M20 14 Q165 62 310 14" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 10"/><path d="M12 6 l-10 8 l10 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M318 6 l10 8 l-10 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle id="b3h" cx="165" cy="38" r="15" fill="#8dff6a" stroke="#fff" stroke-width="3.5" style="pointer-events:all"/></svg></div>
  <div class="bn" id="b3bn" style="top:34%"></div><div id="b3q" style="position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;gap:7px;overflow-x:auto;pointer-events:auto;direction:rtl;padding-bottom:2px;touch-action:pan-x;scrollbar-width:none;transition:opacity .35s"></div><div id="b3hint" style="position:absolute;left:0;right:0;top:calc(max(8px,env(safe-area-inset-top)) + 138px);text-align:center;color:#fff;font:700 13px Tahoma;text-shadow:0 1px 6px #000;pointer-events:none"></div>
  <div id="b3ban" style="position:absolute;left:0;right:0;top:38%;text-align:center;pointer-events:none"></div>`;
  const sheet=document.createElement('div');sheet.className='sheet';root.appendChild(sheet);const fin=document.createElement('div');fin.className='fin';root.appendChild(fin);
@@ -58,7 +58,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   const isC=G.vs&&G.turn===1;const cols=isC?[['#ff7a7a','#5a0d0d','#ffe2e2'],'stripe']:ballCols();ball.userData.sphere.material.map=A.ballTexture(cols[0],cols[1],G.turn+3);ball.userData.sphere.material.needsUpdate=true;
   G.walkDur=o.bskip?.6:3.2;banner(isC?oL('نوبت حریف','CPU turn'):(G.vs?oL('نوبت شما','Your turn'):''),isC?'#ff9a9a':'#7ee787',true);
   hint('');if(isC)G.pick=cpuPick();
-  const b=bowlers[G.turn];b.position.set(E.brPos.x+.5,0,E.brPos.z);b.rotation.y=Math.PI*.5*0;ball.visible=true;ball.position.copy(E.brPos).add(new THREE.Vector3(0,.0,0));G.st=isC?'cpuaim':'aim';G.t=0;G.ang=cl((-.05-G.bx)/.5,-1,1);G.pt=0;ball.visible=true;ball.position.set(G.bx,.108,.4);hint(isC?'':oL('توپ را چپ و راست ببر، با نوار زیرش زاویه را تنظیم کن، بعد تند بالا بکش','Slide the ball, set the angle below, then swipe up fast'));camSnap()}
+  const b=bowlers[G.turn];b.position.set(E.brPos.x+.5,0,E.brPos.z);b.rotation.y=Math.PI*.5*0;ball.visible=true;ball.position.copy(E.brPos).add(new THREE.Vector3(0,.0,0));G.st=isC?'cpuaim':'aim';G.t=0;G.ang=cl((-.05-G.bx)/.5,-1,1);G.pt=0;ball.visible=true;ball.position.set(G.bx,.108,.4);hint(isC?'':oL('توپ را بگیر و تند به بالا بکش. چپ و راست ببریش یا با نوار پایین زاویه را تنظیم کن','Slide the ball, set the angle below, then swipe up fast'));camSnap()}
  const OIL=()=>P.OIL[o0().boil||0];
 
  // ------------ 3D power / accuracy gauge ------------
@@ -98,7 +98,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  function setCam(px,py,pz,lx,ly,lz,k,fovm){CT.p.set(px,py,pz);CT.l.set(lx,ly,lz);CT.k=k||4;CT.fm=fovm||1}
  function directCam(dt){const bx=G.bx,B=G.S&&G.S.ball&&!G.S.ball.gone?G.S.ball:null,o=o0();
   if(G.st==='walk'){const k=G.t/G.walkDur;setCam(lerp(1.8,.5,k),2.1,6.0,lerp(.9,0,k),.55,lerp(.5,-5,k),2.5)}
-  else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.75,.86,2.45,bx*.8,.14,-9,6)}
+  else if(G.st==='aim'||G.st==='cpuaim'){setCam(bx*.75,.64,2.4,bx*.8,.12,-9,6)}
   else if(G.st==='throw'){setCam(bx*.5+.5,1.85,5.5,bx*.8,.3,-6,5)}
   else if(G.st==='roll'){const m=G.cm;if(!B){setCam(0,1.2,-12,0,.2,-19,2);return}
    const cz=B.z;if(m===1||cz>-9.5){if(cz<-12.6)setCam(cl(B.x*.3,-.3,.3),.42,-15.1,0,.2,-18.6,4);else setCam(B.x*.6,.5,cz+1.7,B.x*.5,.14,cz-7,8)}
@@ -132,7 +132,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   o[k]=i;if(k==='b3q')o.b3v=2;W_.gxSave();if(k==='bt'||k==='b3q'||k==='bvs'){if(k==='b3q'){QL=i;dprMax=dprOf(QL);PR=Math.min(W_.devicePixelRatio||1,dprMax)}sheet.classList.remove('open');G.paused=false;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;build();newGame()}else openSheet();quick()};
 
 
- {const sl=hud.querySelector('#b3ang');let dn=0;const set=e=>{const r=sl.getBoundingClientRect(),t=cl((e.clientX-r.left)/r.width*330,20,310);G.ang=cl((t-20)/290*2-1,-1,1)};sl.addEventListener('pointerdown',e=>{dn=1;try{sl.setPointerCapture(e.pointerId)}catch(_){}set(e);W_.gxTone&&W_.gxTone(440,.06,.03)});sl.addEventListener('pointermove',e=>{if(dn)set(e)});sl.addEventListener('pointerup',()=>dn=0);sl.addEventListener('pointercancel',()=>dn=0)}
+ {const sl=hud.querySelector('#b3ang');let dn=0;const set=e=>{const r=sl.getBoundingClientRect(),t=cl((e.clientX-r.left)/r.width*330,20,310);G.ang=cl((t-20)/290*2-1,-1,1)};[sl.querySelector('#b3hit'),sl.querySelector('#b3h')].forEach(el=>{el.addEventListener('pointerdown',e=>{dn=1;e.stopPropagation();try{el.setPointerCapture(e.pointerId)}catch(_){}set(e);W_.gxTone&&W_.gxTone(440,.06,.03)});el.addEventListener('pointermove',e=>{if(dn)set(e)});el.addEventListener('pointerup',()=>dn=0);el.addEventListener('pointercancel',()=>dn=0)})}
  // ------------ quick bar (in-game settings) ------------
  function quick(){const o=o0(),bl=W_.BWBALLS||[],bt=W_.BWT||[];const nm=(a,i)=>oL(a[i][0],a[i][1]);
   const items=[
@@ -158,9 +158,9 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   if(G.st==='walk'&&G.t>.2){G.t=Math.max(G.t,G.walkDur-.01);return}if(G.st==='replay'){G.rep.skip=1;return}if(G.over&&G.over2>.9){newGame();return}
   if(G.st!=='aim'||(G.vs&&G.turn===1))return;if(p.y<p.h*.3)return;G.drag={pts:[p],y0:p.y,x0:p.x,bx0:G.bx,sw:0};W_.gxTone&&W_.gxTone(330,.1,.03)});
  canvas.addEventListener('pointermove',e=>{const d=G.drag;if(!d)return;const p=xy(e);d.pts.push(p);if(d.pts.length>60)d.pts.shift();if(!d.sw&&d.y0-p.y>p.h*.035)d.sw=1;if(!d.sw)G.bx=cl(d.bx0+(p.x-d.x0)/p.w*1.0,-.44,.44);G.pull=0});
- canvas.addEventListener('pointerup',e=>{const d=G.drag;if(!d)return;G.drag=null;const f=flick(d);if(!f){G.pull=0;return}throwBall(f.vx,f.vz,f.sp)});
- function flick(d){const A_=d.pts;if(A_.length<3)return null;let mi=0;A_.forEach((q,i)=>{if(q.y>=A_[mi].y)mi=i});const U=A_.slice(mi);if(U.length<3)return null;const e=U[U.length-1];let i=U.length-1;while(i>0&&e.t-U[i-1].t<150)i--;const a=U[i],dt=Math.max(16,e.t-a.t)/1000,dy=a.y-e.y,dx=e.x-a.x;if(dy<18)return null;const sp=dy/dt;if(sp<140)return null;
-  const k=Math.min(1,(sp-140)/1700),f=U[0],m=U[U.length>>1],tot=Math.max(50,f.y-e.y),cur=(e.x-2*m.x+f.x)/tot,ang=cl(dx/dy,-.6,.6),v=6.8+k*4.2;return{vz:-v,vx:G.ang*.5/18.29*v,sp:cl(cur*1.6,-1,1)}}
+ canvas.addEventListener('pointerup',e=>{const d=G.drag;if(!d)return;G.drag=null;d.pts.push(xy(e));const f=flick(d);if(!f){G.pull=0;return}throwBall(f.vx,f.vz,f.sp)});
+ function flick(d){const A_=d.pts;if(A_.length<2)return null;let mi=0;A_.forEach((q,i)=>{if(q.y>=A_[mi].y)mi=i});const U=A_.slice(mi);if(U.length<2)return null;const e=U[U.length-1];let i=U.length-1;while(i>0&&e.t-U[i-1].t<150)i--;const a=U[i],dt=Math.max(16,e.t-a.t)/1000,dy=a.y-e.y,dx=e.x-a.x;if(dy<14)return null;const sp=dy/dt;if(sp<90)return null;
+  const k=Math.min(1,Math.max(0,(sp-140)/1700)),f=U[0],m=U[U.length>>1],tot=Math.max(50,f.y-e.y),cur=(e.x-2*m.x+f.x)/tot,ang=cl(dx/dy,-.6,.6),v=6.8+k*4.2;return{vz:-v,vx:G.ang*.5/18.29*v,sp:cl(cur*1.6,-1,1)}}
  // ------------ throwing ------------
  function throwBall(vx,vz,sp){if(G.st!=='aim'&&G.st!=='cpuaim')return;G.rel=false;G.tp={vx,vz,sp};G.pull=0;hint('');release()}
  function release(){const v=new THREE.Vector3(G.bx,.12,.4);const o=o0(),cp=G.vs&&G.turn===1,w=cp?1:(o.bwt||0),oil=OIL();
