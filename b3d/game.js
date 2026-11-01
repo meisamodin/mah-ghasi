@@ -27,8 +27,8 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  const sheet=document.createElement('div');sheet.className='sheet';root.appendChild(sheet);const fin=document.createElement('div');fin.className='fin';root.appendChild(fin);
  // ------------ renderer ------------
  const o=o0();let QL=o.b3v===2&&o.b3q!==undefined?o.b3q:1;
- let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:QL<1,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.test})}catch(e){root.remove();if(W_.toast)W_.toast(oL('مرورگر WebGL را پشتیبانی نمی‌کند','WebGL is not supported'));return null}
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.85;renderer.outputColorSpace=THREE.SRGBColorSpace;
+ let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.test})}catch(e){root.remove();if(W_.toast)W_.toast(oL('مرورگر WebGL را پشتیبانی نمی‌کند','WebGL is not supported'));return null}
+ renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=QL>=2?.85:1;renderer.outputColorSpace=THREE.SRGBColorSpace;
  let scene,E,pins,ball,bowlers=[],cam,composer,bloom,artCv,artCx,artT=0,artS,pcount=0;
  const dprOf=q=>q>=2?2.5:q>=1?1.75:1.25;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
  function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?58:44;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
@@ -41,7 +41,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   // bumpers
   E.bump=[-1,1].map(sd=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.05,.09,P.PZ0*-1+3.5),new THREE.MeshPhysicalMaterial({color:E.th.acc,roughness:.3,clearcoat:.6}));m.position.set(sd*(P.HW+.02),.045,-8.3);m.castShadow=true;scene.add(m);return m});
   buildGauge();
-  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:opts.test?THREE.UnsignedByteType:THREE.HalfFloatType,samples:opts.test?0:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w>>1,h>>1),QL>=2?.12:.08,.35,1.15);composer.addPass(bloom);composer.addPass(new OutputPass())}
+  composer=null;if(QL<2){E.cones.forEach(c=>c.visible=false);if(E.dust)E.dust.visible=false}if(QL>=2){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:THREE.HalfFloatType,samples:opts.test?0:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w>>1,h>>1),QL>=2?.12:.08,.35,1.15);composer.addPass(bloom);composer.addPass(new OutputPass())}
   resize();parts()}
  function shirtFor(ti){const c=(W_.BWT&&W_.BWT[ti])?W_.BWT[ti].shirt:['#c0392b','#8e2a20'];return{shirt:new THREE.Color(c[0]).getHex(),shirt2:new THREE.Color(c[1]).getHex(),num:7}}
  function ballCols(){const b=W_.BWBALLS&&W_.BWBALLS[o0().bbc||0],th=W_.BWT&&W_.BWT[o0().bt||0];if(b&&b.c)return[b.c,b.pat];return[th?th.ball:['#7db7ff','#17358a','#bcd8ff'],'']}
@@ -163,7 +163,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  // ------------ throwing ------------
  function throwBall(vx,vz,sp){if(G.st!=='aim'&&G.st!=='cpuaim')return;G.st='throw';G.u=G.pull>.15?.42*G.pull*.9:0;G.rel=false;G.tp={vx,vz,sp};G.pull=0;hint('')}
  function release(){const B=bowlers[G.turn].userData.J.AR.hand,v=new THREE.Vector3();B.getWorldPosition(v);const o=o0(),cp=G.vs&&G.turn===1,w=cp?1:(o.bwt||0),oil=OIL();
-  const b=P.mkBall(cl(v.x,-.5,.5),-.12,G.tp.vx,G.tp.vz,G.tp.sp,{m:[5.4,6.8,7.9][w],hk:[1.25,1,.78][w],oz:oil[0],ol:oil[1],om:oil[2]});b.y=Math.max(.108,v.y-.05);b.drop=1;G.S.ball=b;G.S.bump=!!o.bbump;G.before=P.alive(G.S);G.st='roll';G.rel=true;G.t=0;G.slowed=false;G.gutterFlag=false;G.cm=o.bcam?o.bcam:[1,1,2,3,4][Math.floor(Math.random()*5)];G.rec=[];G.recT=0;G.hit=0;
+  const b=P.mkBall(cl(v.x,-.5,.5),-.12,G.tp.vx,G.tp.vz,G.tp.sp,{m:[5.4,6.8,7.9][w],hk:[1.25,1,.78][w],oz:oil[0],ol:oil[1],om:oil[2]});b.y=Math.max(.108,v.y-.05);b.drop=1;G.S.ball=b;G.S.bump=!!o.bbump;G.before=P.alive(G.S);G.st='roll';G.rel=true;G.t=0;G.slowed=false;G.gutterFlag=false;G.cm=o.bcam?o.bcam:1;G.rec=[];G.recT=0;G.hit=0;
   if(W_.gxTone){W_.gxTone(110,.4,.05);W_.gxVib&&W_.gxVib(14)}spawn(b.x,.05,b.z,10,0xffffff,.5,.5)}
  // ------------ physics events ------------
  let lastSnd=0;function ev(k,a){const n=performance.now();if(k==='hit'||k==='pp'||k==='topple'){if(n-lastSnd>38){lastSnd=n;W_.gxTone&&W_.gxTone(220+rnd(0,600),.08,Math.min(.07,.02+(a&&a.x===undefined?a:1)*.03));if(k==='hit')W_.gxVib&&W_.gxVib(10)}}
@@ -201,6 +201,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
    else if(G.st==='roll'){G.st='settle';G.t=0;ball.visible=false}
    if(G.rec&&G.rec.length<420){G.recT+=dtr;if(G.recT>=1/60){G.recT=0}}}
   // pins pose
+  if(G.S&&G.st!=='sweep')G.S.pins.forEach(p=>{if(p.drop>0)p.drop=Math.max(0,p.drop-dtr*2.2)});
   if(G.S){for(let i=0;i<10;i++)A.poseCap(pins[i],G.S.pins[i],T)}
   if(G.rec&&(G.st==='roll'||G.st==='settle')&&G.rec.length<420&&(!G.S.ball||G.S.ball.z<-6))recFrame();
   if(G.st==='settle'){if(G.t>.6&&(P.quiet(G.S)||G.t>5))evaluate()}
