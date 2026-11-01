@@ -28,7 +28,7 @@ rep1("+`<button class=\"btn\" style=\"width:100%;margin:10px 0\" data-a=\"cqs\""
 
 
 # ---- toolbox v2
-tl=''.join(rd(f)+'\n' for f in ['tools_a.js','tools_b.js','tools_c.js','tools_d.js'])
+tl=''.join(rd(f)+'\n' for f in ['tools_a.js','tools_b.js','tools_c.js','tools_d.js','tools_e.js'])
 rep1("/* ===== mod16 v2: bowling",tl+"/* ===== mod16 v2: bowling")
 rep1("function xvStop(full){","function xvStop(full){try{tlxStop()}catch(e){}")
 rep1("if(!s){$('#app').innerHTML=hd('جعبه ابزار','ابزارهای کاربردی')","if(s&&typeof TLX!=='undefined'&&TLX[s]){const t=TLX[s];$('#app').innerHTML=hd(oL(t.fa,t.en))+t.h()+bk;if(t.init)t.init();return}\n if(!s){$('#app').innerHTML=hd('جعبه ابزار','ابزارهای کاربردی')")
@@ -41,3 +41,9 @@ for f in ['cook.js','tools.js']:
         exec(open(C+f.replace('.js','.py'),encoding='utf8').read()) if os.path.exists(C+f.replace('.js','.py')) else None
 open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
 print('built',len(s))
+
+s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
+assert "const TGP=['pw'," in s and ",TGB=['bf'," in s
+s=s.replace("const TGP=['pw',","const TGP=['pw','pts','sup','bms',",1).replace(",TGB=['bf',",",TGB=['mch','bf',",1)
+open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
+print('order patched')
