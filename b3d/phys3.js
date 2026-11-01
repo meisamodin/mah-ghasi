@@ -17,10 +17,11 @@ export function newSim(){
  S.bar=new C.Body({mass:0,type:C.Body.KINEMATIC,material:M.s});S.bar.addShape(new C.Box(new C.Vec3(.7,.05,.04)));S.bar.position.set(0,1.6,-16.3);w.addBody(S.bar);
  S.bump=false;return S}
 export function setBumpers(S,on){S.bump=on;S.bumpB.forEach(b=>S.w.removeBody(b));S.bumpB=[];if(on)[-1,1].forEach(sd=>{const b=new C.Body({mass:0,material:S.M.s});b.addShape(new C.Box(new C.Vec3(.03,.05,9.3)));b.position.set(sd*(HW+.03),.05,-9.6);S.w.addBody(b);S.bumpB.push(b)})}
+const cp=e=>{try{const c=e.contact,q=c.bi.position,r=c.ri;return{x:q.x+r.x,y:q.y+r.y,z:q.z+r.z}}catch(_){return null}};
 function mkPin(S,i,x,z){const b=new C.Body({mass:1.5,material:S.M.p,linearDamping:.03,angularDamping:.12,allowSleep:true,sleepSpeedLimit:.12,sleepTimeLimit:.25});
  b.addShape(new C.Cylinder(.034,.056,.38,8),new C.Vec3(0,.19-COM,0));b.position.set(x,COM+.002,z);S.w.addBody(b);
  const p={i,body:b,x,z,hx:x,hz:z,st:0,gone:0,hit:0};
- b.addEventListener('collide',e=>{if(!S.ev)return;const v=Math.abs(e.contact.getImpactVelocityAlongNormal());if(v<.25)return;if(e.body===S.ball?.body){p.hit=1;S.ev('hit',v)}else if(e.body&&e.body.material===S.M.p)S.ev('pp',v)});
+ b.addEventListener('collide',e=>{if(!S.ev)return;const v=Math.abs(e.contact.getImpactVelocityAlongNormal());if(v<.25)return;if(e.body===S.ball?.body){p.hit=1;S.ev('hit',v,cp(e))}else if(e.body&&e.body.material===S.M.p)S.ev('pp',v,cp(e))});
  return p}
 export function rackPins(S,keep){S.pins.forEach(p=>S.w.removeBody(p.body));S.pins=[];let i=0;for(let r=0;r<4;r++)for(let k=0;k<=r;k++){const x=(k-r/2)*SP,z=PZ0-r*ROW;const p=mkPin(S,i,x,z);if(keep&&!keep[i]){S.w.removeBody(p.body);p.gone=1;p.st=1;p.body.position.y=-5}S.pins.push(p);i++}}
 export function launch(S,x,y,z,vx,vz,sp,o){o=o||{};if(S.ball)S.w.removeBody(S.ball.body);const m=o.m||6.8,b=new C.Body({mass:m,material:S.M.b,linearDamping:0,angularDamping:0,allowSleep:false});b.addShape(new C.Sphere(.108));b.position.set(x,Math.max(.108,y),z);b.velocity.set(vx,0,vz);S.w.addBody(b);

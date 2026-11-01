@@ -9,7 +9,7 @@ Single-file Persian RTL PWA (period / pregnancy / baby tracker). Everything is i
 - `privacy.html` — public privacy policy (needed for stores).
 - `dev/tests/` — Playwright scripts used for regression checks (they load `/mnt/user-data/outputs/mahbanoo.html` via a routed fake host `http://t.local/`; change the path if you run them elsewhere).
 
-## Release (current: v89)
+## Release (current: v90)
 1. Edit `index.html`.
 2. Bump `const APPV='vN'` in index.html and `mah-ghasi-vN` in sw.js.
 3. Run `node dev/tests/t17.js` (boot/page-error check) plus the feature tests.

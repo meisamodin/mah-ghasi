@@ -1,5 +1,5 @@
 import * as THREE from './three.module.min.js';
-import {pinGeometry} from './env.js?v=89';
+import {pinGeometry} from './env.js?v=90';
 const cv=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
 // ---------- ball ----------
 export function ballTexture(cols,pat,seed){const c=cv(1024,512),x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,512);g.addColorStop(0,cols[2]);g.addColorStop(.35,cols[0]);g.addColorStop(1,cols[1]);x.fillStyle=g;x.fillRect(0,0,1024,512);
@@ -16,7 +16,7 @@ export function makeBall(cols,pat){const g=new THREE.Group(),tex=ballTexture(col
  const hm=new THREE.MeshBasicMaterial({color:0x050507});[[.034,.022],[.0,.052],[-.034,.022]].forEach((p,i)=>{const h=new THREE.Mesh(new THREE.CylinderGeometry(i===1?.0095:.0105,i===1?.0095:.0105,.012,16),hm);const d=new THREE.Vector3(p[0],1,-p[1]*.2).normalize().multiplyScalar(.107);h.position.copy(d);h.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());g.add(h)});
  g.userData.sphere=s;return g}
 // ---------- pins ----------
-export function makePins(scene,E){const geo=E.pinG||pinGeometry(),arr=[];for(let i=0;i<10;i++){const m=new THREE.Mesh(geo,E.pinM);m.castShadow=true;m.receiveShadow=false;scene.add(m);arr.push(m)}return arr}
+export function makePins(scene,E){const geo=E.pinG||pinGeometry(),arr=[];for(let i=0;i<10;i++){const m=new THREE.Mesh(geo,E.pinM);m.castShadow=true;m.receiveShadow=true;scene.add(m);arr.push(m)}return arr}
 const _q=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_ax=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
 export function poseCap(mesh,p,t){
  if(p.gone&&p.y<-.4){mesh.visible=false;return}mesh.visible=true;
