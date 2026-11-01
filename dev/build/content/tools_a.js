@@ -1,6 +1,7 @@
 /* ===== toolbox v2 (A): framework, QR engine, level, sound meter, camera, QR tool, tasbih ===== */
 const TLX={};let TLR={i:[],l:[]},TLST=0;
 const $i=id=>document.getElementById(id),nz=x=>parseFloat(cqNum(String(x==null?'':x)).replace(/[,٬\s]/g,'').replace('٫','.')),fd=(n,d)=>fa(String(+(+n).toFixed(d==null?1:d)).replace('.','٫'));
+const fmt=x=>String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g,',').replace(/\d/g,k=>'۰۱۲۳۴۵۶۷۸۹'[k]);
 const gum=c=>navigator.mediaDevices&&navigator.mediaDevices.getUserMedia?navigator.mediaDevices.getUserMedia(c):Promise.reject(new Error('nomedia'));
 function tlSave(){clearTimeout(TLST);TLST=setTimeout(save,700)}
 function tlxStop(){try{TLR.s&&TLR.s.getTracks().forEach(t=>t.stop())}catch(e){}TLR.s=null;(TLR.i||[]).forEach(clearInterval);TLR.i=[];(TLR.l||[]).forEach(f=>{try{f()}catch(e){}});TLR.l=[];try{TLR.ac&&TLR.ac.close()}catch(e){}TLR.ac=null;if(TLR.w!=null){try{navigator.geolocation.clearWatch(TLR.w)}catch(e){}TLR.w=null}if(TLR.raf){cancelAnimationFrame(TLR.raf);TLR.raf=0}clearTimeout(TLR.mt);TLR.mt=0;TLR.beat=0;TLR.scan=0}

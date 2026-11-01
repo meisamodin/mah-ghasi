@@ -28,7 +28,7 @@ rep1("+`<button class=\"btn\" style=\"width:100%;margin:10px 0\" data-a=\"cqs\""
 
 
 # ---- toolbox v2
-tl=''.join(rd(f)+'\n' for f in ['tools_a.js','tools_b.js','tools_c.js'])
+tl=''.join(rd(f)+'\n' for f in ['tools_a.js','tools_b.js','tools_c.js','tools_d.js'])
 rep1("/* ===== mod16 v2: bowling",tl+"/* ===== mod16 v2: bowling")
 rep1("function xvStop(full){","function xvStop(full){try{tlxStop()}catch(e){}")
 rep1("if(!s){$('#app').innerHTML=hd('جعبه ابزار','ابزارهای کاربردی')","if(s&&typeof TLX!=='undefined'&&TLX[s]){const t=TLX[s];$('#app').innerHTML=hd(oL(t.fa,t.en))+t.h()+bk;if(t.init)t.init();return}\n if(!s){$('#app').innerHTML=hd('جعبه ابزار','ابزارهای کاربردی')")
