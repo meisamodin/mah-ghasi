@@ -66,7 +66,7 @@ print('tester patched')
 
 # ---- v100
 s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
-r1("/* ===== mod16 v2: bowling",open('/home/claude/content/v100.js',encoding='utf8').read()+open('/home/claude/content/v100b.js',encoding='utf8').read()+open('/home/claude/content/v100c.js',encoding='utf8').read()+open('/home/claude/content/v100d.js',encoding='utf8').read()+open('/home/claude/content/v100e.js',encoding='utf8').read()+"\n/* ===== mod16 v2: bowling")
+r1("/* ===== mod16 v2: bowling",open('/home/claude/content/v100.js',encoding='utf8').read()+open('/home/claude/content/v100b.js',encoding='utf8').read()+open('/home/claude/content/v100c.js',encoding='utf8').read()+open('/home/claude/content/v100d.js',encoding='utf8').read()+open('/home/claude/content/v100e.js',encoding='utf8').read()+open('/home/claude/content/v100f.js',encoding='utf8').read()+"\n/* ===== mod16 v2: bowling")
 r1("save=()=>{try{localStorage.setItem('mahbanoo'","save=()=>{if(window.DEC)return;try{localStorage.setItem('mahbanoo'")
 r1("if(hp(e.target.value)===S.pin){UL=true;draw()}else{e.target.value='';$('#le').textContent='رمز اشتباهه'}","lkTry(e.target)")
 r1("+goalsCard()+motCard()+calCard()}return home0()","+goalsCard()+artDayCard()+motCard()+calCard()}return home0()")
@@ -116,3 +116,9 @@ r1('<button class="th" style="margin:0" data-a="ss" aria-label="جستجو">🔍
 r1("else if(a==='tourgo'){S.tour=0}","else if(a==='tourgo'){S.tour=0}\n else if(a==='spsw'){spSwitch();return}\n else if(a==='spjt'){const [f,v]=b.dataset.v.split('|'),L=xLog(iso(today())),A=L[f],i=A.indexOf(v);if(i<0)A.push(v);else A.splice(i,1)}\n else if(a==='spjp'){const L=xLog(iso(today())),v=+b.dataset.v;L.p=L.p===v?-1:v}\n else if(a==='spso'){XSO[b.dataset.v]=!XSO[b.dataset.v]}\n else if(a==='spdp'){const P=S.spdp=S.spdp||{},i=b.dataset.v;P[i]=P[i]?0:1}\n else if(a==='spre'){const P=S.spre=S.spre||{},i=b.dataset.v;P[i]=P[i]?0:1}\n else if(a==='spss'){const v=b.dataset.v;let d;if(v==='0')d=iso(today());else if(v==='1')d=iso(add(today(),-1));else d=(($('#spsd')||{}).value||'');if(!d){toast('تاریخ را انتخاب کن');return}S.start=d;addHist(d);toast('شروع پریود ثبت شد')}")
 open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
 print('v100e patched')
+
+s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
+r1("if(S.sp)spRem(out,I,N,k,due);","if(S.sp){spRem(out,I,N,k,due);spRem2(out,k)}")
+r1("else if(a==='tourgo'){S.tour=0}","else if(a==='tourgo'){S.tour=0}\n else if(a==='spnt'){const C=S.spnt=S.spnt||{},x=b.dataset.v;C[x]=C[x]||{on:false,time:'09:00'};C[x].on=!C[x].on;if(S.nl)delete S.nl['sp'+x];if(C[x].on&&'Notification' in window&&Notification.permission==='default'){try{Notification.requestPermission()}catch(e){}}}")
+open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
+print('v100f patched')

@@ -56,7 +56,7 @@ function spHome(){const I=info(),L=lateInfo(),ph=spPhase(I),D=SPD[ph],nm=spName(
  else{big=fa(I.toNext)+' روز مانده';sub='به پریود '+nm+' · '+jf(I.next,{weekday:'long',day:'numeric',month:'long'})}
  const up=spUp(3);
  let h=`<div class="card" style="text-align:center;background:linear-gradient(135deg,var(--pk),#a855f7);color:#fff;border:none"><div style="opacity:.9;font-size:13px">${oL('حالت همسر','Partner mode')} · ${esc(nm)}</div><div style="font-size:34px;font-weight:800;margin:6px 0">${big}</div><div style="opacity:.95;font-size:13px;line-height:1.8">${sub}</div></div>`;
- h+=spStartCard();
+ h+=spStartCard()+spDiaryQuick();
  if(!S.spn)h+=`<div class="card"><h3>✏️ اسم همسرت</h3><div class="mu">اسم یا لقبش را بنویس تا پیام‌ها و اعلان‌ها شخصی شوند.</div><input id="spn" placeholder="مثلاً مریم" style="margin-top:8px;width:100%;box-sizing:border-box"></div>`;
  h+=`<div class="card"><h3>${D.t}</h3><div class="mu" style="line-height:1.9">${D.s}</div>
  <div style="margin-top:10px"><b>✅ چیکار کنم</b><ul class="spl">${D.do.map(x=>`<li>${x}</li>`).join('')}</ul></div>

@@ -3,17 +3,17 @@ const XCOL={p:'#e11d48',f:'#10b981',m:'#8b5cf6'};
 function xCdn(d){return +new Intl.DateTimeFormat('en-US-u-ca-'+(S.cal==='gr'?'gregory':'persian'),{day:'numeric'}).format(d)}
 function xPh(d){const C=S.cycle,k=dayOf(d),ov=C-14;if(k<=S.period)return'p';if(k>=ov-5&&k<=ov+1)return'f';if(k>=C-6)return'm';return''}
 function xMonth(first,end){const pad=(first.getDay()+1)%7,cells=[];for(let i=0;i<pad;i++)cells.push('<div></div>');const T=iso(today());for(let d=first;d<end;d=add(d,1)){const ph=xPh(d),t=iso(d)===T;cells.push(`<div style="text-align:center;padding:7px 0;border-radius:9px;font-size:13px;${ph?'background:'+XCOL[ph]+';color:#fff;':''}${t?'outline:2.5px solid var(--tx);':''}">${fa(xCdn(d))}</div>`)}return`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px">${['ش','ی','د','س','چ','پ','ج'].map(x=>`<div class="mu" style="text-align:center;font-size:12px">${x}</div>`).join('')}${cells.join('')}</div>`}
-function spCal(){const I=info();let h='';
+function xCalAll(){const I=info();let h='';
  if(S.mode==='preg'){const due=add(parse(S.start),280),w=Math.max(0,Math.floor((today()-parse(S.start))/(7*DAY)));h+=`<div class="card"><h3>🤰 ${oL('تقویم بارداری','Pregnancy timeline')}</h3><div class="mu" style="line-height:2">هفته‌ی فعلی: <b>${fa(w)}</b><br>تاریخ تقریبی زایمان: <b>${jf(due,{day:'numeric',month:'long',year:'numeric'})}</b><br>شروع سه‌ماهه‌ی دوم (هفته ۱۳): ${jf(add(parse(S.start),91),{day:'numeric',month:'long'})}<br>شروع سه‌ماهه‌ی سوم (هفته ۲۸): ${jf(add(parse(S.start),196),{day:'numeric',month:'long'})}<br>کامل شدن بارداری (هفته ۳۷): ${jf(add(parse(S.start),259),{day:'numeric',month:'long'})}</div></div>`}
  else{let a=today();while(xCdn(a)!==1)a=add(a,-1);let b=add(a,1);while(xCdn(b)!==1)b=add(b,1);let c=add(b,1);while(xCdn(c)!==1)c=add(c,1);
   h+=`<div class="card"><h3>📆 ${jf(a,{month:'long',year:'numeric'})}</h3>${xMonth(a,b)}<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:12px"><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${XCOL.p}"></i> پریود</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${XCOL.m}"></i> PMS</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${XCOL.f}"></i> باروری</span></div></div><div class="card"><h3>📆 ${jf(b,{month:'long',year:'numeric'})}</h3>${xMonth(b,c)}</div>`;
   const up=spUp(4);h+=`<div class="card"><h3>🩸 ${oL('پریودهای بعدی','Upcoming periods')}</h3>${up.map(u=>`<div class="note" style="margin:0 0 6px"><span class="ic">🩸</span><div style="flex:1"><b>${jf(u.p,{weekday:'long',day:'numeric',month:'long'})}</b><div class="mu">آماده‌باش: ${jf(add(u.p,-3),{day:'numeric',month:'long'})} · شروع PMS: ${jf(u.pms,{day:'numeric',month:'long'})}</div></div></div>`).join('')}<div class="mu" style="font-size:12px">پیش‌بینی‌ها تخمینی‌اند.</div></div>`}
- return h+spNtCard()+icsCard()}
+ return h}
 /* diary */
 const XMD=['خوب و سرحال','خسته','حساس','دل‌درد','عصبی','غمگین','پرانرژی','کمردرد'],XDO=['حوله‌ی گرم','دمنوش','ماساژ','کار خانه','غذا پختم','خرید','گوش دادم','هدیه','پیام محبت','قرار'],XPN=['ندارد','کم','متوسط','شدید'];
 function xLog(k){const J=S.spj=S.spj||{};return J[k]=J[k]||{m:[],p:-1,did:[],hp:[],n:''}}
 function xChips(f,arr,sel){return`<div class="chips" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${arr.map(x=>`<button class="chip ${sel.includes(x)?'on':''}" data-a="spjt" data-v="${f}|${x}">${x}</button>`).join('')}</div>`}
-function spDg(){const k=iso(today()),L=xLog(k),J=S.spj||{};
+function xDgAll(){const k=iso(today()),L=xLog(k),J=S.spj||{};
  let h=`<div class="card"><h3>📝 ${oL('دفتر امروز','Today')}</h3><div class="mu">ثبت کن همسرت امروز چطور بود و تو چه کردی؛ برنامه یاد می‌گیرد چه چیزی بیشتر کمک می‌کند.</div>
  <div style="margin-top:10px"><b>حال همسرم</b>${xChips('m',XMD,L.m)}</div>
  <div style="margin-top:10px"><b>شدت درد (به گفته‌ی خودش)</b><div class="chips" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${XPN.map((x,i)=>`<button class="chip ${L.p===i?'on':''}" data-a="spjp" data-v="${i}">${x}</button>`).join('')}</div></div>
@@ -34,7 +34,7 @@ const XFOOD=[['بخورد (کمک می‌کند)','عدس، لوبیا، اسف�
 const XSOS=['بیهوش شده یا نزدیک غش است','خونریزی خیلی زیاد (هر ۱ تا ۲ ساعت یک پد پر می‌شود)','درد ناگهانی و بسیار شدید، به‌خصوص یک‌طرفه','تب بالا همراه درد یا ترشح بدبو','باردار است (یا احتمالش هست) و درد یا خونریزی دارد','تنگی نفس یا درد قفسه‌ی سینه','فکر آسیب به خود دارد'];
 let XSO={};
 const XPF=[['drink','نوشیدنی دلخواه'],['food','خوراکی و غذای دلخواه'],['gift','گل یا هدیه‌ی مورد علاقه'],['brand','برند و سایز محصولات بهداشتی'],['relief','چه چیزی دردش را کم می‌کند'],['upset','چه چیزی اذیتش می‌کند'],['note','یادداشت مهم دیگر']];
-function spCare(){const I=info(),k=iso(today()),w=spWk(),c=w.d.length,ph=spPhase(I),P=S.spp=S.spp||{};
+function xCareAll(){const I=info(),k=iso(today()),w=spWk(),c=w.d.length,ph=spPhase(I),P=S.spp=S.spp||{};
  const any=Object.values(XSO).some(Boolean);
  let h=`<div class="card" style="border:1.5px solid #e11d48"><h3>🆘 ${oL('کمک فوری: حالش بد است','Urgent help')}</h3><div class="mu">اگر هر کدام صدق می‌کند تیک بزن:</div>${XSOS.map((x,i)=>`<div class="note" style="margin:6px 0 0;align-items:center;cursor:pointer" data-a="spso" data-v="${i}"><span class="ic">${XSO[i]?'☑️':'⬜'}</span><div style="flex:1">${x}</div></div>`).join('')}${any?`<div class="note" style="margin-top:10px;border-color:#e11d48;background:#fee2e2;color:#7f1d1d"><span class="ic">🚨</span><div><b>معطل نکن.</b> فوراً اورژانس ۱۱۵ را بگیر${XSO[6]?' و برای بحران روانی ۱۲۳':''}. او را تنها نگذار، آرام نگهش دار و اگر بیهوش است به پهلو بخوابانش.<div style="margin-top:8px"><a class="btn" style="display:block;text-align:center;text-decoration:none" href="tel:115">📞 تماس با ۱۱۵</a></div></div></div>`:`<div class="mu" style="margin-top:8px">هیچ‌کدام تیک نخورده: معمولاً با گرما، استراحت، مایعات و همراهی بهتر می‌شود. اگر درد چند ساعت بدتر شد یا نگران بودی، با پزشک تماس بگیر.</div>`}</div>`;
  const dn=I.period?Math.min(I.day,5):0,PD=S.spdp=S.spdp||{};
@@ -52,7 +52,7 @@ function spCare(){const I=info(),k=iso(today()),w=spWk(),c=w.d.length,ph=spPhase
  h+=`<div class="card"><h3>🧘 ${oL('مراقبت از خودت','Take care of yourself')}</h3><ul class="spl">${SPSELF.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
  h+=`<div class="card"><h3>📖 ${oL('مقاله‌ها','Articles')}</h3><div class="mu">۹۵ مقاله‌ی کاربردی دربارهٔ چرخه، بارداری، نوزاد و سلامت.</div><button class="btn o" style="width:100%;margin-top:8px" data-a="av">خوندن مقاله‌ها</button></div>`;
  return h}
-function spTabs(){return[['home','🏠','خانه'],['cal','📆','تقویم'],['dg','📝','دفتر'],['care','💝','مراقبت ویژه'],['learn','🎓','آموزش'],['set','⚙️','تنظیمات']]}
+
 /* home: record period start card */
 function spStartCard(){return`<div class="card"><h3>🩸 ${oL('پریودش شروع شد؟','Did her period start?')}</h3><div class="mu">ثبت دقیق، پیش‌بینی‌ها را درست نگه می‌دارد. آخرین ثبت: <b>${jf(parse(S.start),{day:'numeric',month:'long'})}</b></div><div class="row" style="margin-top:8px"><button class="btn" data-a="spss" data-v="0">امروز شروع شد</button><button class="btn o" data-a="spss" data-v="1">دیروز</button></div><div class="row" style="margin-top:8px"><input type="date" id="spsd" max="${iso(today())}" style="flex:1"><button class="btn o" data-a="spss" data-v="d">ثبت تاریخ</button></div></div>`}
 /* profile switch */
