@@ -47,3 +47,19 @@ assert "const TGP=['pw'," in s and ",TGB=['bf'," in s
 s=s.replace("const TGP=['pw',","const TGP=['pw','pts','sup','bms',",1).replace(",TGB=['bf',",",TGB=['mch','bf',",1)
 open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
 print('order patched')
+
+# ---- tester helpers and mode-aware calm tab
+s=open('/mnt/user-data/outputs/mahbanoo.html',encoding='utf8').read()
+def r1(a,c):
+    global s
+    assert s.count(a)==1,('count',s.count(a),a[:60])
+    s=s.replace(a,c)
+r1("نسخه: 18\\nمرورگر: '","نسخه: '+APPV+'\\nحالت: '+S.mode+' · زبان: '+S.lang+' · صفحه: '+innerWidth+'x'+innerHeight+'\\nمرورگر: '")
+r1("'\\nتب: '+tab+'","'\\nتب: '+tab+(XV&&XV.s?' · ابزار: '+XV.s:'')+'")
+r1("function pmsTab(){const I=info(),on=I.pms;","function pmsTab(){if(S.mode==='preg'||S.mode==='meno')return pmsCalm();return pmsTab0()}\nfunction pmsTab0(){const I=info(),on=I.pms;")
+r1("function draw(){try{if(!MGR){MGR=1;mgRestore()}draw0()","function draw(){try{TABS[2][2]=(S.mode==='preg'||S.mode==='meno')?'آرامش':'PMS';if(!MGR){MGR=1;mgRestore()}draw0()")
+r1("abCard()+supCard()+aboutCard()","abCard()+testerCard()+supCard()+aboutCard()")
+r1("else if(a==='xcp'){XS.cp=+b.dataset.v}","else if(a==='xcp'){XS.cp=+b.dataset.v}\n else if(a==='tsk'){const o=S.tst=S.tst||{},k=b.dataset.v;o[k]=o[k]?0:1;save()}")
+r1("/* ===== mod16 v2: bowling",open('/home/claude/content/tester.js',encoding='utf8').read()+"\n/* ===== mod16 v2: bowling")
+open('/mnt/user-data/outputs/mahbanoo.html','w',encoding='utf8').write(s)
+print('tester patched')
