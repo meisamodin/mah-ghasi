@@ -30,7 +30,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
  let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:QL<1,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.test})}catch(e){root.remove();if(W_.toast)W_.toast(oL('مرورگر WebGL را پشتیبانی نمی‌کند','WebGL is not supported'));return null}
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=QL>=1?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;renderer.outputColorSpace=THREE.SRGBColorSpace;
  let scene,E,pins,ball,bowlers=[],cam,composer,bloom,artCv,artCx,artT=0,artS,pcount=0;
- const dprOf=q=>q>=2?2.5:q>=1?2:1.25;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
+ const dprOf=q=>q>=2?2.5:q>=1?1.75:1.25;let dprMax=dprOf(QL),PR=Math.min(W_.devicePixelRatio||1,dprMax),AD=0,adT=0,adN=0,adS=0;
  function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setPixelRatio(PR);renderer.setSize(w,h,false);if(cam){cam.aspect=w/h;cam.fov=h>w?58:44;cam.updateProjectionMatrix()}if(composer){composer.setPixelRatio(PR);composer.setSize(w,h)}}
  // ------------ scene ------------
  function build(){if(scene){scene.traverse(x=>{if(x.geometry)x.geometry.dispose&&x.geometry.dispose()})}scene=new THREE.Scene();const ti=o0().bt||0;artCv=document.createElement('canvas');artCv.width=1024;artCv.height=384;artCx=artCv.getContext('2d');artS={stars:Array.from({length:46},()=>[Math.random(),Math.random(),rnd(.8,2),rnd(1,3)]),f:0,k:0};
@@ -41,7 +41,7 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   // bumpers
   E.bump=[-1,1].map(sd=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.05,.09,P.PZ0*-1+3.5),new THREE.MeshPhysicalMaterial({color:E.th.acc,roughness:.3,clearcoat:.6}));m.position.set(sd*(P.HW+.02),.045,-8.3);m.castShadow=true;scene.add(m);return m});
   buildGauge();
-  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:THREE.HalfFloatType,samples:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w,h),QL>=2?.12:.08,.35,1.15);composer.addPass(bloom);composer.addPass(new OutputPass())}
+  composer=null;if(QL>=1){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight,rt=new THREE.WebGLRenderTarget(w*PR,h*PR,{type:opts.test?THREE.UnsignedByteType:THREE.HalfFloatType,samples:opts.test?0:4});composer=new EffectComposer(renderer,rt);composer.addPass(new RenderPass(scene,cam));bloom=new UnrealBloomPass(new THREE.Vector2(w>>1,h>>1),QL>=2?.12:.08,.35,1.15);composer.addPass(bloom);composer.addPass(new OutputPass())}
   resize();parts()}
  function shirtFor(ti){const c=(W_.BWT&&W_.BWT[ti])?W_.BWT[ti].shirt:['#c0392b','#8e2a20'];return{shirt:new THREE.Color(c[0]).getHex(),shirt2:new THREE.Color(c[1]).getHex(),num:7}}
  function ballCols(){const b=W_.BWBALLS&&W_.BWBALLS[o0().bbc||0],th=W_.BWT&&W_.BWT[o0().bt||0];if(b&&b.c)return[b.c,b.pat];return[th?th.ball:['#7db7ff','#17358a','#bcd8ff'],'']}
@@ -264,8 +264,8 @@ export function open(host,opts){if(CUR)CUR.close();opts=opts||{};const o0=()=>W_
   <div style="color:#7ee787;font:700 12px Tahoma;margin-bottom:12px">✓ ${oL('امتیاز ثبت شد','Score saved')} · +${fa(earn)} ${oL('سکه','coins')}</div><div style="display:flex;gap:8px"><button class="gb" style="flex:1" data-f="r">${oL('بازی دوباره','Play again')}</button><button class="gb" style="flex:1" data-f="x">${oL('خروج','Exit')}</button></div></div>`;
   fin.classList.add('show');fin.onclick=e=>{const b=e.target.closest('[data-f]');if(!b)return;if(b.dataset.f==='r')newGame();else close()};confetti(r>=0?90:0)}
  // ------------ loop ------------
- let raf=0,last=performance.now(),dead=false;
- function frame(t){if(dead)return;raf=requestAnimationFrame(frame);const dr=(t-last)/1000,dt=Math.min(.05,dr);last=t;update(dt);render();adS+=dr;adN++;if(adS>1.2){const ms=adS/adN*1000;adS=0;adN=0;const mx=Math.min(W_.devicePixelRatio||1,dprMax);if(ms>22&&PR>1){PR=Math.max(1,PR-.2);resize()}else if(ms<13&&PR<mx){PR=Math.min(mx,PR+.1);resize()}}}
+ let raf=0,last=performance.now(),dead=false;const fpsEl=document.createElement('div');fpsEl.style.cssText='position:absolute;left:10px;top:max(120px,calc(env(safe-area-inset-top) + 112px));color:#fff;font:600 10px monospace;opacity:.55;pointer-events:none;text-shadow:0 1px 3px #000';root.appendChild(fpsEl);
+ function frame(t){if(dead)return;raf=requestAnimationFrame(frame);const dr=(t-last)/1000,dt=Math.min(.05,dr);last=t;update(dt);render();adS+=dr;adN++;if(adS>1.2){const ms=adS/adN*1000;adS=0;adN=0;const mx=Math.min(W_.devicePixelRatio||1,dprMax);if(fpsEl)fpsEl.textContent='FPS '+Math.round(1000/ms)+' · '+PR.toFixed(2)+'x';if(ms>24&&PR>1.25){PR=Math.max(1.25,PR-.15);resize()}else if(ms<14&&PR<mx){PR=Math.min(mx,PR+.1);resize()}}}
  function render(){if(composer)composer.render();else renderer.render(scene,cam)}
  function close(){if(dead)return;dead=true;cancelAnimationFrame(raf);try{renderer.dispose();renderer.forceContextLoss()}catch(_){}root.remove();CUR=null;try{if(document.fullscreenElement)document.exitFullscreen()}catch(_){}opts.onClose&&opts.onClose()}
  // go
