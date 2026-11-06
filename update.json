@@ -1,12 +1,12 @@
 {
- "versionCode": 1021,
- "versionName": "v125",
- "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1021/LunarCycle.apk",
+ "versionCode": 1022,
+ "versionName": "v126",
+ "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1022/LunarCycle.apk",
  "mirrors": [
   "https://cdn.jsdelivr.net/gh/meisamodin/mah-ghasi@dl/LunarCycle.apk",
   "https://raw.githubusercontent.com/meisamodin/mah-ghasi/dl/LunarCycle.apk"
  ],
- "notes": "بهبود سرعت بارگذاری و امنیت برنامه",
+ "notes": "بهبود پایداری و امنیت برنامه",
  "force": true,
- "size": 2844012
+ "size": 2844016
 }
