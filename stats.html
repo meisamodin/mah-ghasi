@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Lunar cycle آمار</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff5f8;--card:#fff;--tx:#3b0a1f;--mu:#8a5a6c;--pk:#e11d48;--bd:#fde2ea}
+@media (prefers-color-scheme:dark){:root{--bg:#1a0f14;--card:#26161d;--tx:#fde7ef;--mu:#c79aab;--bd:#3a2129}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Vazirmatn,Tahoma,sans-serif;padding:16px;max-width:760px;margin:auto}
+h1{font-size:24px;margin:8px 0 4px}.mu{color:var(--mu);font-size:13px;line-height:1.9}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0}
+.c{background:var(--card);border:1.5px solid var(--bd);border-radius:18px;padding:14px}
+.c b{display:block;font-size:30px;font-weight:900;color:var(--pk);font-variant-numeric:tabular-nums}
+.c span{font-size:13px;color:var(--mu)}
+.bars{display:flex;align-items:flex-end;gap:3px;height:120px;margin-top:10px;direction:ltr}
+.bars i{flex:1;background:linear-gradient(var(--pk),#db2777);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:7px 4px;border-bottom:1px solid var(--bd);text-align:right}
+a{color:var(--pk)}
+</style></head><body>
+<h1>📊 آمار Lunar cycle</h1>
+<div class="mu">به‌روز می‌شه هر بار که صفحه رو باز کنی. آمار jsDelivr معمولاً ۱ تا ۲ روز تأخیر داره.</div>
+<div class="g">
+ <div class="c"><b id="gh">…</b><span>دانلود از گیت‌هاب (کل)</span></div>
+ <div class="c"><b id="jd">…</b><span>دانلود از jsDelivr (۳۰ روز)</span></div>
+ <div class="c"><b id="op">…</b><span>باز شدن برنامه (۳۰ روز، تقریبی)</span></div>
+ <div class="c"><b id="op1">…</b><span>باز شدن برنامه (دیروز)</span></div>
+</div>
+<div class="c"><b style="font-size:16px;color:var(--tx)">باز شدن برنامه در ۳۰ روز اخیر</b><div class="bars" id="bars"></div><div class="mu" id="bl"></div></div>
+<div class="c" style="margin-top:10px"><b style="font-size:16px;color:var(--tx)">دانلود هر نسخه از گیت‌هاب</b><table id="tb"><tr><td class="mu">در حال دریافت…</td></tr></table></div>
+<div class="mu" style="margin-top:12px">
+• «دانلود» یعنی تعداد دفعاتی که فایل برنامه گرفته شده (نصب اول و آپدیت‌ها با هم).<br>
+• «باز شدن برنامه» از تعداد بررسی نسخه‌ی جدید حساب می‌شه؛ برنامه هر بار باز می‌شه یک بار چک می‌کنه. تقسیمش بر ۲ تا ۳ تقریباً تعداد کاربرهای فعال روزانه رو می‌ده.<br>
+• هیچ اطلاعات شخصی یا سلامتی از کاربرها ارسال نمی‌شه؛ این اعداد فقط از شمارش دانلود فایل‌ها میاد.<br>
+• جزئیات بیشتر: <a href="https://www.jsdelivr.com/package/gh/meisamodin/mah-ghasi?tab=stats" target="_blank">صفحه‌ی آمار jsDelivr</a> · <a href="https://github.com/meisamodin/mah-ghasi/releases" target="_blank">نسخه‌ها در گیت‌هاب</a>
+</div>
+<script>
+const fa=n=>Number(n||0).toLocaleString('fa-IR');
+fetch('https://api.github.com/repos/meisamodin/mah-ghasi/releases?per_page=100').then(r=>r.json()).then(L=>{let t=0,rows='';L.forEach(r=>{const a=(r.assets||[]).find(x=>/\.apk$/.test(x.name));if(!a)return;t+=a.download_count;rows+=`<tr><td>${(r.name||r.tag_name).replace('Lunar cycle ','')}</td><td>${new Date(r.published_at).toLocaleDateString('fa-IR')}</td><td><b>${fa(a.download_count)}</b></td></tr>`});document.getElementById('gh').textContent=fa(t);document.getElementById('tb').innerHTML='<tr><th>نسخه</th><th>تاریخ</th><th>دانلود</th></tr>'+rows}).catch(()=>{document.getElementById('gh').textContent='—'});
+fetch('https://data.jsdelivr.com/v1/stats/packages/gh/meisamodin/mah-ghasi@dl/files?period=month').then(r=>r.json()).then(F=>{const f=n=>(F.find?F.find(x=>x.name==='/'+n):null)||{hits:{total:0,dates:{}}};const apk=f('LunarCycle.apk'),up=f('update.json');document.getElementById('jd').textContent=fa(apk.hits.total);document.getElementById('op').textContent=fa(up.hits.total);
+ const d=Object.entries(up.hits.dates||{}).sort();const last=d.filter(x=>x[1]>0).pop();document.getElementById('op1').textContent=last?fa(last[1]):'۰';const mx=Math.max(1,...d.map(x=>x[1]));document.getElementById('bars').innerHTML=d.map(x=>`<i title="${x[0]}: ${x[1]}" style="height:${x[1]/mx*100}%"></i>`).join('');document.getElementById('bl').textContent=d.length?'از '+new Date(d[0][0]).toLocaleDateString('fa-IR')+' تا '+new Date(d[d.length-1][0]).toLocaleDateString('fa-IR')+' · بیشترین روز: '+fa(mx):''}).catch(()=>{['jd','op','op1'].forEach(i=>document.getElementById(i).textContent='—')});
+</script></body></html>

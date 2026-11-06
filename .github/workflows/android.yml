@@ -1,0 +1,103 @@
+name: Android APK
+on:
+  push:
+    branches: [main]
+    paths: ['index.html', 'sw.js', 'b3d/**', 'android/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: 'Release notes (Persian)'
+        required: false
+permissions:
+  contents: write
+concurrency:
+  group: apk
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+      - name: Versions
+        run: |
+          VN=$(grep -oE "APPV=[\"']v[0-9]+" index.html | head -1 | grep -o 'v[0-9]*')
+          VC=$((1000 + ${{ github.run_number }}))
+          echo "VERSION_NAME=${VN:-v0}" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VC" >> $GITHUB_ENV
+          echo "Building $VN ($VC)"
+      - name: Bundle web app
+        run: |
+          W=android/app/src/main/assets/www
+          rm -rf $W && mkdir -p $W
+          cp index.html sw.js manifest.webmanifest icon-192.png icon-512.png privacy.html $W/ 2>/dev/null || true
+          [ -d b3d ] && cp -r b3d $W/ || true
+      - name: Keystore
+        env: { KS_B64: '${{ secrets.KEYSTORE_B64 }}' }
+        run: |
+          if [ -z "$KS_B64" ]; then echo "::warning::Secret KEYSTORE_B64 missing - building unsigned debug APK only"; echo "HAS_KS=0" >> $GITHUB_ENV; exit 0; fi
+          echo "$KS_B64" | base64 -d > $RUNNER_TEMP/release.jks
+          echo "KS_FILE=$RUNNER_TEMP/release.jks" >> $GITHUB_ENV
+          echo "HAS_KS=1" >> $GITHUB_ENV
+      - name: Build
+        env:
+          KS_PASS: ${{ secrets.KEYSTORE_PASS }}
+          KS_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          if [ "$HAS_KS" = "1" ]; then gradle -p android assembleRelease --no-daemon; else gradle -p android assembleDebug --no-daemon; fi
+      - name: Debug artifact
+        if: env.HAS_KS != '1'
+        uses: actions/upload-artifact@v4
+        with: { name: LunarCycle-debug, path: android/app/build/outputs/apk/debug/app-debug.apk }
+      - name: Prepare release
+        if: env.HAS_KS == '1'
+        env: { IN_NOTES: '${{ github.event.inputs.notes }}' }
+        run: |
+          mkdir out
+          cp android/app/build/outputs/apk/release/app-release.apk out/LunarCycle.apk
+          NOTES="$IN_NOTES"
+          [ -z "$NOTES" ] && [ -f release-notes.txt ] && NOTES="$(cat release-notes.txt)"
+          [ -z "$NOTES" ] && NOTES="$(git log -1 --pretty=%s)"
+          export NOTES
+          python3 - <<PY
+          import json,os
+          j={"versionCode":int(os.environ["VERSION_CODE"]),"versionName":os.environ["VERSION_NAME"],
+             "apk":"https://github.com/${{ github.repository }}/releases/download/apk-"+os.environ["VERSION_CODE"]+"/LunarCycle.apk",
+             "mirrors":["https://cdn.jsdelivr.net/gh/${{ github.repository }}@dl/LunarCycle.apk","https://raw.githubusercontent.com/${{ github.repository }}/dl/LunarCycle.apk"],
+             "notes":os.environ.get("NOTES",""),"force":True,"size":os.path.getsize("out/LunarCycle.apk")}
+          open("out/update.json","w",encoding="utf-8").write(json.dumps(j,ensure_ascii=False,indent=1))
+          PY
+          cat out/update.json
+      - uses: softprops/action-gh-release@v2
+        if: env.HAS_KS == '1'
+        with:
+          tag_name: apk-${{ env.VERSION_CODE }}
+          name: Lunar cycle ${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})
+          files: |
+            out/LunarCycle.apk
+            out/update.json
+          make_latest: true
+      - name: Publish update.json
+        if: env.HAS_KS == '1'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git pull --rebase origin main || true
+          cp out/update.json update.json
+          git add update.json
+          git commit -m "update.json ${{ env.VERSION_NAME }} [skip ci]" || exit 0
+          git push origin HEAD:main
+      - name: Publish download mirror (dl branch + jsDelivr)
+        if: env.HAS_KS == '1'
+        run: |
+          rm -rf $RUNNER_TEMP/dl && mkdir $RUNNER_TEMP/dl && cp out/LunarCycle.apk out/update.json $RUNNER_TEMP/dl/
+          cd $RUNNER_TEMP/dl
+          git init -q -b dl
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A && git commit -qm "dl ${{ env.VERSION_NAME }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" dl:dl
+          for f in LunarCycle.apk update.json; do curl -s -m 30 "https://purge.jsdelivr.net/gh/${{ github.repository }}@dl/$f" || true; echo; done
