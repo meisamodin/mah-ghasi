@@ -1,12 +1,12 @@
 {
- "versionCode": 1024,
- "versionName": "v127",
- "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1024/LunarCycle.apk",
+ "versionCode": 1025,
+ "versionName": "v128",
+ "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1025/LunarCycle.apk",
  "mirrors": [
   "https://cdn.jsdelivr.net/gh/meisamodin/mah-ghasi@dl/LunarCycle.apk",
   "https://raw.githubusercontent.com/meisamodin/mah-ghasi/dl/LunarCycle.apk"
  ],
- "notes": "تب‌های PMS، سلامت و اعلان دسته‌بندی شدن؛ روی هر دسته بزن تا باز بشه\nتب‌های آموزش، مراقبت ویژه و اعلان در پنل همسر هم دسته‌بندی شدن\nبخش «اخیراً باز کردی» برای دسترسی سریع\nسؤال‌های رایج پنل همسر به تب آموزش منتقل شد\n۶ مقاله‌ی جدید: نوار و کاپ قاعدگی، سفر و پریود، طب گیاهی، حرف زدن با همسر، کافئین و شیرینی، تمرکز و حافظه\n۷ آموزش تصویری جدید برای همسر: پوشک، حمام نوزاد، آرام کردن گریه، شیر خشک، همراهی بعد از زایمان، سوختگی، خون‌دماغ",
+ "notes": "تنظیمات دسته‌بندی شد: چرخه، همسر، اعلان، ظاهر، امنیت، پشتیبان، گزارش پزشک و راهنما\nجستجو در تنظیمات\nکارت خلاصه‌ی بالای تنظیمات\nکارت «معرفی برنامه به دوستان» با لینک دانلود بدون VPN",
  "force": true,
- "size": 2852472
+ "size": 2853572
 }
