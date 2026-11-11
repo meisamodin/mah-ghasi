@@ -1,0 +1,12 @@
+{
+ "versionCode": 1026,
+ "versionName": "v129",
+ "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1026/LunarCycle.apk",
+ "mirrors": [
+  "https://cdn.jsdelivr.net/gh/meisamodin/mah-ghasi@dl/LunarCycle.apk",
+  "https://raw.githubusercontent.com/meisamodin/mah-ghasi/dl/LunarCycle.apk"
+ ],
+ "notes": "پشتیبان رمزدار با یک دکمه به تلگرام یا گوگل‌درایو (تنظیمات ← پشتیبان و داده‌ها)\nیادآور هفتگی برای فرستادن پشتیبان\nبازگردانی آسان: فایل رو انتخاب کن و رمز رو بزن",
+ "force": true,
+ "size": 2856424
+}
