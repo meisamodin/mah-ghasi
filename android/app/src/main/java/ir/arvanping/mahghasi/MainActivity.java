@@ -790,6 +790,29 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void shareFile(String name, String mime, String b64) {
+            try {
+                byte[] data = Base64.decode(b64, Base64.DEFAULT);
+                File dir = new File(getCacheDir(), "share");
+                dir.mkdirs();
+                File f = new File(dir, name.replaceAll("[^A-Za-z0-9._-]", "_"));
+                try (OutputStream os = new FileOutputStream(f)) {
+                    os.write(data);
+                }
+                final Uri fu = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".files", f);
+                ui.post(() -> {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType(mime);
+                    i.putExtra(Intent.EXTRA_STREAM, fu);
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(i, "ارسال پشتیبان به…"));
+                });
+            } catch (Exception e) {
+                toast("ارسال فایل انجام نشد");
+            }
+        }
+
+        @JavascriptInterface
         public void saveFile(String name, String mime, String b64) {
             try {
                 byte[] data = Base64.decode(b64, Base64.DEFAULT);
