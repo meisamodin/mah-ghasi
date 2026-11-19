@@ -1,12 +1,12 @@
 {
- "versionCode": 1027,
- "versionName": "v130",
- "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1027/LunarCycle.apk",
+ "versionCode": 1028,
+ "versionName": "v131",
+ "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1028/LunarCycle.apk",
  "mirrors": [
   "https://cdn.jsdelivr.net/gh/meisamodin/mah-ghasi@dl/LunarCycle.apk",
   "https://raw.githubusercontent.com/meisamodin/mah-ghasi/dl/LunarCycle.apk"
  ],
- "notes": "پیام‌های محبت‌آمیز روزانه در روزهای پریود و PMS، با نکته‌ی مراقبتی هر روز\nبرای همسر: هر روز یه پیشنهاد که اون روز چه کاری انجام بده\nپیام شب‌بخیر در روزهای پریود (قابل خاموش کردن)\nتنظیم ساعت و دیدن نمونه‌ی پیام در تب اعلان",
+ "notes": "در بارداری: پیام هر هفته با اندازه‌ی جنین و یادآور مراقبت‌ها و آزمایش‌ها (برای همسر هم)\nاعلان وقتی پریود ۳ و ۷ روز عقب افتاد\nاعلان روز قبل و روز موعد آمپول، حلقه، پچ، IUD و ایمپلنت",
  "force": true,
- "size": 2859312
+ "size": 2860136
 }
