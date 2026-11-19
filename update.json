@@ -1,0 +1,12 @@
+{
+ "versionCode": 1028,
+ "versionName": "v131",
+ "apk": "https://github.com/meisamodin/mah-ghasi/releases/download/apk-1028/LunarCycle.apk",
+ "mirrors": [
+  "https://cdn.jsdelivr.net/gh/meisamodin/mah-ghasi@dl/LunarCycle.apk",
+  "https://raw.githubusercontent.com/meisamodin/mah-ghasi/dl/LunarCycle.apk"
+ ],
+ "notes": "در بارداری: پیام هر هفته با اندازه‌ی جنین و یادآور مراقبت‌ها و آزمایش‌ها (برای همسر هم)\nاعلان وقتی پریود ۳ و ۷ روز عقب افتاد\nاعلان روز قبل و روز موعد آمپول، حلقه، پچ، IUD و ایمپلنت",
+ "force": true,
+ "size": 2860136
+}
